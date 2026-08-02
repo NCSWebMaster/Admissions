@@ -34,7 +34,7 @@ document.getElementById('f-grade').innerHTML = '<option value="">— Select Grad
 // ── STATE ────────────────────────────────────────────────────
 let currentCode = null;
 let currentStep = 1;
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 let schoolRowCount = 0;
 let siblingRowCount = 0;
 
@@ -170,6 +170,41 @@ function setYesNo(groupId, value) {
 function toggleExplainWrap(id, show) {
   document.getElementById(id).style.display = show ? 'block' : 'none';
 }
+
+// ── PASTORAL REFERENCE UPLOAD (optional) ────────────────────
+document.getElementById('pastoralRefFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  const statusEl = document.getElementById('pastoralRefStatus');
+  if (!file) return;
+
+  if (!currentCode) {
+    statusEl.textContent = 'Something went wrong — please refresh and try again.';
+    return;
+  }
+
+  statusEl.textContent = 'Uploading…';
+  statusEl.style.color = '#9a8b84';
+
+  const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = `${currentCode}/${Date.now()}-${cleanName}`;
+
+  const { error: uploadError } = await sb.storage.from('pastoral-references').upload(path, file);
+  if (uploadError) {
+    statusEl.textContent = 'Upload failed — please try again.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
+  const { data, error } = await sb.rpc('attach_pastoral_reference', { p_code: currentCode, p_file_path: path });
+  if (error || !data || !data.success) {
+    statusEl.textContent = 'Uploaded, but could not save — please contact the office.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
+  statusEl.textContent = `Uploaded: ${file.name}`;
+  statusEl.style.color = '#16a34a';
+});
 
 // ── STATEMENT OF FAITH ACCORDION ────────────────────────────
 // Parent must expand and view this before the agreement checkbox unlocks.
