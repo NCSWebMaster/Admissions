@@ -171,6 +171,15 @@ function toggleExplainWrap(id, show) {
   document.getElementById(id).style.display = show ? 'block' : 'none';
 }
 
+// ── STATEMENT OF FAITH ACCORDION ────────────────────────────
+// Parent must expand and view this before the agreement checkbox unlocks.
+document.getElementById('sofAccordionToggle').addEventListener('click', () => {
+  const accordion = document.getElementById('sofAccordion');
+  const isOpen = accordion.classList.toggle('open');
+  document.getElementById('sofAccordionArrow').textContent = isOpen ? '▲' : '▾';
+  document.getElementById('f-agreement').disabled = false;
+});
+
 // ── YES/NO TOGGLES ───────────────────────────────────────────
 [
   { group: 'repeatedGradeToggle', wrap: 'repeatedGradeExplainWrap' },
@@ -328,7 +337,7 @@ document.getElementById('applicationForm').addEventListener('submit', async (e) 
   errorEl.textContent = '';
 
   if (!document.getElementById('f-agreement').checked) {
-    errorEl.textContent = 'Please acknowledge the Statement of Faith and Parent Handbook to continue.';
+    errorEl.textContent = 'Please expand and read the Statement of Faith, then check the agreement box to continue.';
     return;
   }
   if (!document.getElementById('f-signature-name').value.trim()) {

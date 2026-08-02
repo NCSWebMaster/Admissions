@@ -72,6 +72,21 @@
 .apply-toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:12px 22px; border-radius:8px; font-family:'Trebuchet MS',sans-serif; font-size:0.88rem; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:999; max-width:90vw; text-align:center; }
 .apply-toast.show{ opacity:1; }
 
+/* Step action buttons (Back / Continue / Submit) — equal width, no more
+   inconsistent sizing between them */
+.apply-step-actions{ display:flex; gap:12px; }
+.apply-step-actions button{ flex:1 1 0; width:auto; }
+
+/* Statement of Faith accordion — must expand before agreeing */
+.apply-accordion{ border:1px solid var(--grey-line); border-radius:8px; overflow:hidden; margin-bottom:14px; }
+.apply-accordion-header{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 16px; background:#fdf6f2; border:none; cursor:pointer; text-align:left; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.92rem; color:var(--ink); }
+.apply-accordion-arrow{ color:var(--bronze); transition:transform 0.2s; flex-shrink:0; }
+.apply-accordion.open .apply-accordion-arrow{ transform:rotate(180deg); }
+.apply-accordion-body{ display:none; padding:16px; background:#fff; font-size:0.9rem; color:#5a4d47; line-height:1.7; }
+.apply-accordion.open .apply-accordion-body{ display:block; }
+.apply-agree input:disabled{ opacity:0.4; cursor:not-allowed; }
+.apply-agree input:disabled + label{ opacity:0.5; }
+
 @media(max-width:600px){
   .apply-row{ grid-template-columns:1fr; }
   .apply-card{ padding:24px 18px; }
