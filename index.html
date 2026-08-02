@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apply | Northridge Community School</title>
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="apply.css">
+<link rel="stylesheet" href="styles.css?v=1">
+<link rel="stylesheet" href="apply.css?v=3">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -214,10 +214,26 @@
       </div>
 
       <div class="apply-section-title" style="margin-top:24px;">Agreement</div>
-      <div class="apply-agree">
-        <input type="checkbox" id="f-agreement">
-        <label for="f-agreement">I acknowledge and agree to the NCS Statement of Faith and Parent Handbook.</label>
+
+      <div class="apply-accordion" id="sofAccordion">
+        <button type="button" class="apply-accordion-header" id="sofAccordionToggle">
+          <span>Statement of Faith <span class="hint">(tap to expand — required)</span></span>
+          <span class="apply-accordion-arrow" id="sofAccordionArrow">▾</span>
+        </button>
+        <div class="apply-accordion-body" id="sofAccordionBody">
+          <p>We believe the Bible to be the authoritative Word of God, inerrant and infallible. We believe in one true God manifested eternally in three Persons — Father, Son, and Holy Spirit — and in the deity, virgin birth, atoning death, and bodily resurrection of Jesus Christ. We believe salvation is a free gift of grace received by faith, and that marriage is a covenant between one man and one woman as delineated in Scripture.</p>
+        </div>
       </div>
+
+      <div class="apply-agree">
+        <input type="checkbox" id="f-agreement" disabled>
+        <label for="f-agreement">I have read and agree to the Statement of Faith above.</label>
+      </div>
+
+      <p style="font-size:0.85rem;margin:-6px 0 4px;">
+        <a href="biblical-foundations.pdf" target="_blank" rel="noopener" style="color:var(--bronze);font-family:'Trebuchet MS',sans-serif;font-weight:700;text-decoration:none;">View our full Biblical Foundations Statement →</a>
+      </p>
+
       <div class="apply-row">
         <div class="apply-field">
           <label>Parent Signature <span class="hint">(type full name)</span></label>
@@ -232,7 +248,7 @@
 
     <div class="apply-card" style="text-align:center;">
       <div id="formError" class="code-error"></div>
-      <div style="display:flex;gap:12px;">
+      <div class="apply-step-actions">
         <button type="button" class="apply-btn-secondary" id="prevStepBtn" style="display:none;">Back</button>
         <button type="button" class="apply-btn-primary" id="nextStepBtn">Continue</button>
         <button type="submit" class="apply-btn-primary" id="submitAppBtn" style="display:none;">Submit Application</button>
@@ -255,6 +271,6 @@
 
 <div class="apply-toast" id="toast"></div>
 
-<script src="app.js"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
