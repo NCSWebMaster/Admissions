@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply | Northridge Community School</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/apply.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav>
+  <a href="https://www.northridgecommunityschool.com" class="brand">
+    <img src="https://ncswebmaster.github.io/NCS/logo.png" alt="NCS Crest">
+    <span class="brand-name-full">Northridge Community School</span>
+    <span class="brand-name-short">NCS</span>
+  </a>
+</nav>
+
+<div class="page-header">
+  <h1>Admission Application</h1>
+  <p>Enter the access code your admissions coordinator sent you to begin or continue your application.</p>
+</div>
+
+<div class="apply-wrap">
+
+  <!-- LOADING STATE -->
+  <div id="loadingScreen" class="apply-state-screen">
+    <p>Loading…</p>
+  </div>
+
+  <!-- CODE ENTRY SCREEN -->
+  <div id="codeScreen" class="apply-card code-entry" style="display:none;">
+    <p style="font-family:'Trebuchet MS',sans-serif;font-weight:700;color:var(--ink);margin-bottom:4px;">Enter Your Access Code</p>
+    <p style="font-size:0.88rem;color:#9a8b84;">This was emailed to you by our admissions office.</p>
+    <div class="code-error" id="codeError"></div>
+    <input type="text" id="codeInput" class="code-input" maxlength="8" placeholder="XXXXXXXX" autocomplete="off" autocapitalize="characters">
+    <button class="apply-btn-primary" id="codeSubmitBtn" style="max-width:280px;margin:8px auto 0;">Continue</button>
+    <p style="font-size:0.8rem;color:#9a8b84;margin-top:20px;">Don't have a code? Contact <a href="mailto:office@northridgecommunityschool.com" style="color:var(--bronze);">office@northridgecommunityschool.com</a> or attend an upcoming Information Night.</p>
+  </div>
+
+  <!-- ALREADY DECIDED SCREEN -->
+  <div id="decidedScreen" class="apply-state-screen" style="display:none;">
+    <span class="apply-status-badge" id="decidedBadge"></span>
+    <h2 id="decidedTitle"></h2>
+    <p id="decidedMessage"></p>
+  </div>
+
+  <!-- SUBMITTED / CONFIRMATION SCREEN -->
+  <div id="submittedScreen" class="apply-state-screen" style="display:none;">
+    <span class="apply-status-badge submitted">Submitted</span>
+    <h2>Thank You!</h2>
+    <p>Your application for <strong id="submittedStudentName"></strong> has been received. Our admissions team will review it and follow up by email with next steps.</p>
+  </div>
+
+  <!-- APPLICATION FORM -->
+  <form id="applicationForm" style="display:none;">
+    <div class="apply-steps">
+      <span class="apply-step-dot active" data-step="1"></span>
+      <span class="apply-step-dot" data-step="2"></span>
+      <span class="apply-step-dot" data-step="3"></span>
+      <span class="apply-step-dot" data-step="4"></span>
+    </div>
+
+    <!-- STEP 1: STUDENT INFO -->
+    <div class="apply-card apply-step" data-step="1">
+      <div class="apply-section-title">Student Information</div>
+      <div class="apply-section-sub">Confirm or update your student's details.</div>
+
+      <div class="apply-row single">
+        <div class="apply-field">
+          <label>Student's Full Name</label>
+          <input type="text" id="f-student-name">
+        </div>
+      </div>
+      <div class="apply-row">
+        <div class="apply-field">
+          <label>Nickname <span class="hint">(optional)</span></label>
+          <input type="text" id="f-nickname">
+        </div>
+        <div class="apply-field">
+          <label>Age</label>
+          <input type="number" id="f-age" min="1" max="20">
+        </div>
+      </div>
+      <div class="apply-row">
+        <div class="apply-field">
+          <label>Date of Birth</label>
+          <input type="date" id="f-dob">
+        </div>
+        <div class="apply-field">
+          <label>Gender</label>
+          <select id="f-gender">
+            <option value="">— Select —</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+      </div>
+      <div class="apply-row single">
+        <div class="apply-field">
+          <label>Anticipated Grade Placement</label>
+          <select id="f-grade"></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: SCHOOL HISTORY -->
+    <div class="apply-card apply-step" data-step="2" style="display:none;">
+      <div class="apply-section-title">School History</div>
+      <div class="apply-section-sub">Tell us about your student's previous schooling.</div>
+
+      <div id="schoolsContainer"></div>
+      <button type="button" class="apply-add-btn" id="addSchoolBtn">+ Add a Previous School</button>
+
+      <div class="apply-row single" style="margin-top:20px;">
+        <div class="apply-field">
+          <label>Last Grade Completed</label>
+          <input type="text" id="f-last-grade" placeholder="e.g. 2nd Grade">
+        </div>
+      </div>
+
+      <div class="apply-field" style="margin-bottom:16px;">
+        <label>Has the student ever repeated a grade?</label>
+        <div class="apply-yesno" id="repeatedGradeToggle">
+          <button type="button" data-value="true">Yes</button>
+          <button type="button" data-value="false">No</button>
+        </div>
+      </div>
+      <div class="apply-row single" id="repeatedGradeExplainWrap" style="display:none;">
+        <div class="apply-field">
+          <label>Please explain</label>
+          <textarea id="f-repeated-explain"></textarea>
+        </div>
+      </div>
+
+      <div class="apply-field" style="margin-bottom:16px;">
+        <label>Has the student ever been dismissed, suspended, or expelled?</label>
+        <div class="apply-yesno" id="disciplinaryToggle">
+          <button type="button" data-value="true">Yes</button>
+          <button type="button" data-value="false">No</button>
+        </div>
+      </div>
+      <div class="apply-row single" id="disciplinaryExplainWrap" style="display:none;">
+        <div class="apply-field">
+          <label>Please explain</label>
+          <textarea id="f-disciplinary-explain"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: STUDENT NEEDS & FAMILY CONTEXT -->
+    <div class="apply-card apply-step" data-step="3" style="display:none;">
+      <div class="apply-section-title">Student Needs</div>
+      <div class="apply-section-sub">This helps us support your student well from day one.</div>
+
+      <div class="apply-field" style="margin-bottom:16px;">
+        <label>Any diagnosed learning differences, IEP, or 504 plan?</label>
+        <div class="apply-yesno" id="learningNeedsToggle">
+          <button type="button" data-value="true">Yes</button>
+          <button type="button" data-value="false">No</button>
+        </div>
+      </div>
+      <div class="apply-row single" id="learningNeedsExplainWrap" style="display:none;">
+        <div class="apply-field">
+          <label>Please explain</label>
+          <textarea id="f-learning-explain"></textarea>
+        </div>
+      </div>
+
+      <div class="apply-row single">
+        <div class="apply-field">
+          <label>Medical conditions, allergies, or medications <span class="hint">(optional)</span></label>
+          <textarea id="f-medical"></textarea>
+        </div>
+      </div>
+
+      <div class="apply-section-title" style="margin-top:24px;">Family Context</div>
+      <div id="siblingsContainer"></div>
+      <button type="button" class="apply-add-btn" id="addSiblingBtn">+ Add a Sibling</button>
+
+      <div class="apply-row" style="margin-top:20px;">
+        <div class="apply-field">
+          <label>Church Home / Affiliation <span class="hint">(optional)</span></label>
+          <input type="text" id="f-church">
+        </div>
+        <div class="apply-field">
+          <label>How did you hear about NCS?</label>
+          <input type="text" id="f-referral">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: EMERGENCY CONTACT & AGREEMENT -->
+    <div class="apply-card apply-step" data-step="4" style="display:none;">
+      <div class="apply-section-title">Emergency Contact</div>
+      <div class="apply-section-sub">Someone we can reach if a parent/guardian is unavailable <span class="hint">(optional)</span>.</div>
+      <div class="apply-row">
+        <div class="apply-field">
+          <label>Name</label>
+          <input type="text" id="f-ec-name">
+        </div>
+        <div class="apply-field">
+          <label>Relationship</label>
+          <input type="text" id="f-ec-relationship">
+        </div>
+      </div>
+      <div class="apply-row single">
+        <div class="apply-field">
+          <label>Phone</label>
+          <input type="tel" id="f-ec-phone">
+        </div>
+      </div>
+
+      <div class="apply-section-title" style="margin-top:24px;">Agreement</div>
+      <div class="apply-agree">
+        <input type="checkbox" id="f-agreement">
+        <label for="f-agreement">I acknowledge and agree to the NCS Statement of Faith and Parent Handbook.</label>
+      </div>
+      <div class="apply-row">
+        <div class="apply-field">
+          <label>Parent Signature <span class="hint">(type full name)</span></label>
+          <input type="text" id="f-signature-name">
+        </div>
+        <div class="apply-field">
+          <label>Date</label>
+          <input type="date" id="f-signature-date">
+        </div>
+      </div>
+    </div>
+
+    <div class="apply-card" style="text-align:center;">
+      <div id="formError" class="code-error"></div>
+      <div style="display:flex;gap:12px;">
+        <button type="button" class="apply-btn-secondary" id="prevStepBtn" style="display:none;">Back</button>
+        <button type="button" class="apply-btn-primary" id="nextStepBtn">Continue</button>
+        <button type="submit" class="apply-btn-primary" id="submitAppBtn" style="display:none;">Submit Application</button>
+      </div>
+      <button type="button" class="apply-btn-secondary" id="saveLaterBtn">Save &amp; Finish Later</button>
+    </div>
+  </form>
+
+</div>
+
+<footer>
+  <img src="https://ncswebmaster.github.io/NCS/logo.png" alt="NCS Crest" class="crest-small">
+  <div>Northridge Community School</div>
+  <div class="footer-contact">
+    <span>office@northridgecommunityschool.com</span>
+    <span class="footer-divider">|</span>
+    <span>Granada Hills / Northridge, CA</span>
+  </div>
+</footer>
+
+<div class="apply-toast" id="toast"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
