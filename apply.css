@@ -1,0 +1,73 @@
+/* ── ADMISSION APPLICATION — page-specific styles ─────────────
+   Built on top of styles.css's design tokens (--red, --bronze,
+   --bronze-light, --ink, --grey-line). Nothing here overrides the
+   base file — it only adds what this page needs. */
+
+.apply-wrap{ max-width:720px; margin:0 auto; padding:0 6% 80px; }
+
+.apply-card{ background:#fff; border:1px solid var(--grey-line); border-radius:12px; padding:32px 28px; box-shadow:0 2px 10px rgba(0,0,0,0.04); margin-bottom:24px; }
+
+/* Code entry screen */
+.code-entry{ text-align:center; max-width:420px; margin:0 auto; }
+.code-input{ display:block; margin:24px auto 8px; width:100%; max-width:280px; padding:16px; border:2px solid var(--grey-line); border-radius:8px; font-family:'Trebuchet MS',sans-serif; font-size:1.4rem; font-weight:700; text-align:center; letter-spacing:6px; text-transform:uppercase; }
+.code-input:focus{ outline:none; border-color:var(--red); }
+.code-error{ color:var(--red); font-family:'Trebuchet MS',sans-serif; font-size:0.88rem; min-height:1.3em; margin-bottom:8px; }
+
+/* Progress steps */
+.apply-steps{ display:flex; justify-content:center; gap:8px; margin:0 0 32px; }
+.apply-step-dot{ width:8px; height:8px; border-radius:50%; background:var(--grey-line); transition:background 0.2s,transform 0.2s; }
+.apply-step-dot.active{ background:var(--red); transform:scale(1.3); }
+.apply-step-dot.done{ background:var(--bronze); }
+
+/* Section headers within the form */
+.apply-section-title{ font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:1.05rem; color:var(--red); margin:0 0 4px; }
+.apply-section-sub{ font-size:0.88rem; color:#9a8b84; margin-bottom:18px; }
+
+/* Form controls */
+.apply-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.apply-row.single{ grid-template-columns:1fr; }
+.apply-field{ display:flex; flex-direction:column; gap:6px; }
+.apply-field label{ font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.85rem; color:var(--ink); }
+.apply-field .hint{ font-weight:400; color:#9a8b84; font-size:0.78rem; }
+.apply-field input, .apply-field select, .apply-field textarea{ padding:11px 14px; border:1px solid var(--grey-line); border-radius:6px; font-family:Georgia,serif; font-size:0.95rem; color:var(--ink); background:#fff; }
+.apply-field input:focus, .apply-field select:focus, .apply-field textarea:focus{ outline:none; border-color:var(--bronze); }
+.apply-field textarea{ min-height:80px; resize:vertical; font-family:'Trebuchet MS',sans-serif; }
+
+/* Yes/No toggle */
+.apply-yesno{ display:flex; gap:10px; }
+.apply-yesno button{ flex:1; padding:11px; border:2px solid var(--grey-line); border-radius:6px; background:#fff; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.88rem; color:#6b5e58; cursor:pointer; transition:all 0.15s; }
+.apply-yesno button.selected{ border-color:var(--red); color:var(--red); background:#fdf6f2; }
+
+/* Repeatable rows (previous schools, siblings) */
+.apply-repeat-row{ border:1px solid var(--grey-line); border-radius:8px; padding:16px; margin-bottom:12px; position:relative; }
+.apply-repeat-remove{ position:absolute; top:10px; right:10px; background:none; border:none; color:#c0392b; font-size:0.8rem; cursor:pointer; font-family:'Trebuchet MS',sans-serif; }
+.apply-add-btn{ background:#fdf6f2; color:var(--bronze); border:1.5px solid var(--bronze); border-radius:6px; padding:9px 16px; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; }
+
+/* Buttons */
+.apply-btn-primary{ background:var(--red); color:#fff; border:none; border-radius:6px; padding:14px 32px; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.95rem; cursor:pointer; transition:opacity 0.2s; width:100%; }
+.apply-btn-primary:hover{ opacity:0.88; }
+.apply-btn-primary:disabled{ opacity:0.5; cursor:not-allowed; }
+.apply-btn-secondary{ background:none; color:var(--bronze); border:2px solid var(--bronze); border-radius:6px; padding:12px 28px; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.9rem; cursor:pointer; width:100%; margin-top:10px; }
+
+/* Agreement checkbox row */
+.apply-agree{ display:flex; align-items:flex-start; gap:10px; margin:18px 0; }
+.apply-agree input{ width:20px; height:20px; margin-top:2px; flex-shrink:0; cursor:pointer; }
+.apply-agree label{ font-size:0.88rem; color:#5a4d47; cursor:pointer; }
+
+/* States: loading / error / success */
+.apply-state-screen{ text-align:center; padding:60px 6%; }
+.apply-state-screen h2{ color:var(--red); font-size:1.6rem; margin-bottom:12px; }
+.apply-state-screen p{ color:#5a4d47; max-width:440px; margin:0 auto; }
+.apply-status-badge{ display:inline-block; padding:6px 16px; border-radius:20px; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px; }
+.apply-status-badge.submitted{ background:#f0f4ff; color:#3b82f6; }
+.apply-status-badge.accepted{ background:#f0fdf4; color:#16a34a; }
+.apply-status-badge.waitlisted{ background:#fffbeb; color:#b45309; }
+.apply-status-badge.declined{ background:#f3eee9; color:#9a8b84; }
+
+.apply-toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:12px 22px; border-radius:8px; font-family:'Trebuchet MS',sans-serif; font-size:0.88rem; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:999; max-width:90vw; text-align:center; }
+.apply-toast.show{ opacity:1; }
+
+@media(max-width:600px){
+  .apply-row{ grid-template-columns:1fr; }
+  .apply-card{ padding:24px 18px; }
+}

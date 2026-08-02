@@ -1,0 +1,267 @@
+:root{
+  --red:#C8102E;
+  --bronze:#B07D4F;
+  --bronze-light:#D9B48F;
+  --cream:#FFFFFF;
+  --ink:#3A2E2A;
+  --grey-line:#E6E1DC;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{overflow-x:hidden;}
+body{font-family:'Georgia','Times New Roman',serif;color:var(--ink);background:#fff;line-height:1.6;overflow-x:hidden;width:100%;}
+h1,h2,h3{font-family:'Trebuchet MS','Helvetica Neue',sans-serif;font-weight:700;letter-spacing:0.5px;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 6%;background:#fff;border-bottom:1px solid var(--grey-line);position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand img{height:48px;}
+.brand span{font-size:1.25rem;color:var(--red);font-weight:700;}
+.brand-full{display:none;}
+.brand-short{display:none;}
+.brand-name-full{font-size:1.25rem;color:var(--red);font-weight:700;display:inline;}
+.brand-name-short{font-size:1.25rem;color:var(--red);font-weight:700;display:none;}
+.nav-links{display:flex;gap:24px;list-style:none;align-items:center;flex-wrap:nowrap;}
+.nav-links a{text-decoration:none;color:var(--ink);font-family:'Trebuchet MS',sans-serif;font-size:0.88rem;font-weight:600;transition:color 0.2s;white-space:nowrap;}
+.nav-links a:hover,.nav-links a.active{color:var(--red);}
+.nav-portal{margin-left:20px;padding-left:20px;border-left:1px solid var(--grey-line);}
+.nav-portal a{color:var(--bronze) !important;border:1.5px solid var(--bronze);border-radius:20px;padding:6px 16px;transition:background 0.2s,color 0.2s !important;}
+.nav-portal a:hover{background:var(--bronze);color:#fff !important;}
+.nav-portal a.active{background:var(--bronze);color:#fff !important;}
+.menu-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;}
+.menu-toggle span{display:block;width:24px;height:3px;background:var(--red);border-radius:2px;transition:transform 0.2s,opacity 0.2s;}
+.menu-toggle.open span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+.menu-toggle.open span:nth-child(2){opacity:0;}
+.menu-toggle.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+
+/* PAGE HEADER */
+.page-header{text-align:center;padding:60px 6% 50px;background:linear-gradient(180deg,#fff 0%,#fdf6f2 100%);}
+.page-header h1{font-size:2.6rem;color:var(--red);margin-bottom:12px;}
+.page-header p{font-size:1.05rem;color:#5a4d47;max-width:600px;margin:0 auto;}
+
+/* SECTIONS */
+section{padding:70px 6%;}
+.section-alt{background:#fdf6f2;border-top:1px solid var(--grey-line);border-bottom:1px solid var(--grey-line);}
+.section-tuition{background:#fff;border-top:4px solid var(--bronze);border-bottom:4px solid var(--bronze);box-shadow:inset 0 12px 24px -20px rgba(176,125,79,0.4),inset 0 -12px 24px -20px rgba(176,125,79,0.4);}
+.section-header{text-align:center;margin-bottom:48px;}
+.section-header .eyebrow{display:inline-block;color:var(--bronze);font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+.section-header h2{font-size:2.2rem;color:var(--red);}
+.divider{width:60px;height:4px;background:var(--bronze);margin:16px auto 0;border-radius:2px;}
+
+/* BUTTONS */
+.btn-primary{background:var(--red);color:#fff;}
+.btn-secondary{background:#fff;color:var(--bronze);border:2px solid var(--bronze);}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;max-width:1200px;margin:0 auto;}
+.about-card{background:#fff;border:1px solid var(--grey-line);border-radius:10px;padding:32px 24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
+.about-card .icon{width:56px;height:56px;margin:0 auto 16px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;font-family:'Trebuchet MS',sans-serif;font-weight:700;}
+.about-card h3{color:var(--ink);margin-bottom:10px;font-size:1.15rem;}
+.about-card p{font-size:0.95rem;color:#6b5e58;}
+.about-intro{max-width:760px;margin:0 auto 48px;text-align:center;font-size:1.05rem;color:#5a4d47;}
+
+/* VIDEO PLACEHOLDER */
+.video-placeholder{max-width:800px;margin:48px auto 0;aspect-ratio:16/9;background:#fdf6f2;border:2px dashed var(--bronze-light);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.video-placeholder-inner{text-align:center;color:var(--bronze);}
+.video-icon{width:60px;height:60px;border-radius:50%;background:var(--bronze);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 12px;}
+.video-placeholder-inner p{font-family:'Trebuchet MS',sans-serif;font-weight:600;font-size:0.95rem;}
+
+/* STATS BANNER */
+.stats-banner{max-width:500px;margin:56px auto 0;display:grid;grid-template-columns:1fr;gap:32px;padding-top:48px;border-top:1px solid var(--grey-line);}
+.stat-item{text-align:center;padding:8px 16px;}
+.stat-number{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:3rem;color:var(--red);line-height:1;margin-bottom:12px;display:inline-block;transition:transform 0.2s;}
+.stat-number.pop{animation:stat-pop 0.5s ease;}
+@keyframes stat-pop{0%{transform:scale(1);}40%{transform:scale(1.25);color:var(--bronze);}100%{transform:scale(1);}}
+.stat-item p{font-size:0.95rem;color:#6b5e58;max-width:340px;margin:0 auto;}
+
+/* WEEKLY SCHEDULE BAR */
+.schedule-bar{max-width:1200px;margin:40px auto 0;background:#fdf6f2;border:1px solid var(--grey-line);border-radius:10px;padding:28px 32px;}
+.schedule-bar h3{text-align:center;color:var(--ink);font-size:1.1rem;margin-bottom:6px;}
+.schedule-subtitle{text-align:center;color:var(--bronze);font-family:'Trebuchet MS',sans-serif;font-weight:600;font-size:0.85rem;letter-spacing:0.5px;margin-bottom:24px;}
+.schedule-table{display:grid;grid-template-columns:repeat(5,1fr);gap:0 16px;}
+.schedule-item{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.schedule-item .day-name{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:0.95rem;color:var(--ink);padding-bottom:14px;border-bottom:1px solid var(--grey-line);width:100%;text-align:center;}
+.day-tag{display:inline-block;padding:5px 0;border-radius:20px;font-size:0.8rem;font-weight:700;letter-spacing:0.5px;font-family:'Trebuchet MS',sans-serif;width:90px;text-align:center;}
+.day-tag.home{background:var(--bronze);color:#fff;}
+.day-tag.campus{background:var(--red);color:#fff;box-shadow:0 0 0 0 rgba(200,16,46,0.55);animation:campus-pulse 2.4s ease-out infinite;}
+@keyframes campus-pulse{0%{box-shadow:0 0 0 0 rgba(200,16,46,0.55);}70%{box-shadow:0 0 0 8px rgba(200,16,46,0);}100%{box-shadow:0 0 0 0 rgba(200,16,46,0);}}
+@media(prefers-reduced-motion:reduce){.day-tag.campus{animation:none;box-shadow:0 0 0 4px rgba(200,16,46,0.15);}}
+
+/* STAFF */
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px;max-width:1100px;margin:0 auto;justify-content:center;}
+.staff-card{text-align:center;}
+.staff-photo{width:120px;height:120px;border-radius:50%;margin:0 auto 14px;background:linear-gradient(135deg,var(--bronze-light),var(--bronze));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Trebuchet MS',sans-serif;font-size:1.6rem;font-weight:700;border:4px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.08);overflow:hidden;}
+.staff-photo img{width:100%;height:100%;object-fit:cover;object-position:center 25%;}
+.staff-card h3{font-size:1.05rem;color:var(--ink);margin-bottom:4px;}
+.staff-card p{font-size:0.88rem;color:var(--bronze);font-family:'Trebuchet MS',sans-serif;font-weight:600;}
+
+/* EVENTS & SCHEDULE */
+.events-section{background:#fff;border-bottom:1px solid var(--grey-line);}
+.events-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;max-width:1100px;margin:0 auto;}
+.accordion-card{background:#fff;border:1px solid var(--grey-line);border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.accordion-card-header{display:flex;align-items:center;gap:12px;padding:20px 24px;border-bottom:1px solid var(--grey-line);background:#fdf6f2;}
+.accordion-card-icon{font-size:1.4rem;line-height:1;}
+.accordion-card-header h3{font-size:1.1rem;color:var(--ink);margin:0;}
+.accordion-list{padding:8px 0;}
+.accordion-item{border-bottom:1px solid var(--grey-line);}
+.accordion-item:last-child{border-bottom:none;}
+.accordion-trigger{width:100%;display:flex;align-items:center;gap:12px;padding:14px 24px;background:none;border:none;cursor:pointer;text-align:left;transition:background 0.15s;}
+.accordion-trigger:hover{background:#fdf6f2;}
+.accordion-item.has-event .accordion-trigger{border-left:3px solid var(--red);}
+.accordion-item:not(.has-event) .accordion-trigger{border-left:3px solid var(--grey-line);}
+.accordion-day-label{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:0.95rem;color:var(--ink);flex:1;}
+.accordion-meta{font-size:0.8rem;color:var(--bronze);font-family:'Trebuchet MS',sans-serif;font-weight:600;margin-right:8px;}
+.accordion-item:not(.has-event) .accordion-meta{color:#bbb;}
+.accordion-arrow{flex-shrink:0;color:var(--bronze);transition:transform 0.25s ease;}
+.accordion-trigger[aria-expanded="true"] .accordion-arrow{transform:rotate(180deg);}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;padding:0 24px;}
+.accordion-body.open{max-height:400px;padding:12px 24px 16px;}
+.accordion-empty{font-size:0.88rem;color:#aaa;font-style:italic;margin:0;}
+.event-item{display:flex;align-items:flex-start;gap:14px;padding:8px 0;border-bottom:1px solid var(--grey-line);}
+.event-item:last-child{border-bottom:none;}
+.event-time{font-family:'Trebuchet MS',sans-serif;font-size:0.78rem;font-weight:700;color:var(--red);background:#fff0f2;padding:3px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.event-badge{font-size:1.1rem;flex-shrink:0;margin-top:2px;}
+.event-item strong{font-family:'Trebuchet MS',sans-serif;font-size:0.92rem;color:var(--ink);display:block;margin-bottom:2px;}
+.event-item p{font-size:0.82rem;color:#888;margin:0;}
+
+/* ADMISSIONS */
+.admissions-wrap{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;}
+.steps{list-style:none;counter-reset:step;}
+.steps li{counter-increment:step;display:flex;gap:18px;margin-bottom:28px;}
+.steps li::before{content:counter(step);flex-shrink:0;width:40px;height:40px;border-radius:50%;background:var(--bronze);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS',sans-serif;font-weight:700;}
+.steps h3{font-size:1.1rem;margin-bottom:4px;color:var(--ink);}
+.steps p{font-size:0.95rem;color:#6b5e58;}
+.admissions-card{background:#fff;border:1px solid var(--grey-line);border-radius:10px;padding:36px 28px;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.admissions-card h3{color:var(--red);margin-bottom:18px;font-size:1.3rem;}
+.admissions-card ul{list-style:none;margin-bottom:24px;}
+.admissions-card ul li{padding:8px 0;border-bottom:1px solid var(--grey-line);display:flex;justify-content:space-between;font-size:0.95rem;}
+.admissions-card ul li span:last-child{color:var(--bronze);font-weight:700;}
+.admissions-card a{display:block;text-align:center;background:var(--red);color:#fff;padding:14px;border-radius:6px;text-decoration:none;font-family:'Trebuchet MS',sans-serif;font-weight:700;}
+
+/* TUITION */
+.tuition-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;max-width:800px;margin:0 auto 32px;}
+.tuition-card{background:#fdf6f2;border:1px solid var(--grey-line);border-radius:10px;padding:32px 28px;text-align:center;}
+.tuition-grade{font-family:'Trebuchet MS',sans-serif;font-weight:700;color:var(--ink);font-size:1.05rem;margin-bottom:12px;}
+.tuition-amount{font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:2.4rem;color:var(--red);margin-bottom:14px;}
+.tuition-amount span{font-size:1rem;font-weight:600;color:var(--bronze);}
+.tuition-card p{font-size:0.92rem;color:#6b5e58;}
+.tuition-card-wide{max-width:800px;margin:0 auto 32px;padding:28px 36px;}
+.tuition-wide-main{display:flex;align-items:center;justify-content:space-between;gap:24px;text-align:left;}
+.tuition-wide-text .tuition-grade{margin-bottom:6px;}
+.tuition-wide-text p{margin:0;}
+.tuition-card-wide .tuition-amount{margin-bottom:0;flex-shrink:0;white-space:nowrap;}
+.tuition-card-wide .tuition-toggle{margin:18px auto 0;}
+.tuition-toggle{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px auto 0;background:#fff;border:2px solid var(--bronze);color:var(--bronze);font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:0.85rem;padding:9px 20px;border-radius:24px;cursor:pointer;transition:background 0.2s,color 0.2s;animation:toggle-attention 2.5s ease-in-out infinite;}
+.tuition-toggle:hover,.tuition-toggle[aria-expanded="true"]{background:var(--bronze);color:#fff;}
+.tuition-arrow{transition:transform 0.25s ease;}
+.tuition-toggle[aria-expanded="true"] .tuition-arrow{transform:rotate(180deg);}
+@keyframes toggle-attention{0%,100%{box-shadow:0 0 0 0 rgba(176,125,79,0.35);}50%{box-shadow:0 0 0 8px rgba(176,125,79,0);}}
+@media(prefers-reduced-motion:reduce){.tuition-toggle{animation:none;}}
+.tuition-details{max-height:0;overflow:hidden;transition:max-height 0.3s ease,opacity 0.3s ease,margin-top 0.3s ease;opacity:0;margin-top:0;}
+.tuition-details.open{max-height:120px;opacity:1;margin-top:16px;}
+.tuition-details p{background:#fff;border:1px solid var(--grey-line);border-radius:8px;padding:12px 16px;font-size:0.9rem;color:var(--ink);}
+.tuition-details strong{color:var(--red);}
+.tuition-note{max-width:760px;margin:0 auto;text-align:center;border-top:1px solid var(--grey-line);padding-top:32px;}
+.tuition-note h3{color:var(--red);font-size:1.2rem;margin-bottom:10px;}
+.tuition-note p{font-size:0.95rem;color:#5a4d47;}
+
+/* ENROLL CTA */
+.enroll-cta{text-align:center;background:linear-gradient(135deg,#fdf6f2 0%,#fff 100%);border-top:1px solid var(--grey-line);border-bottom:1px solid var(--grey-line);}
+.enroll-cta h2{font-size:2rem;color:var(--red);margin-bottom:14px;}
+.enroll-cta p{max-width:560px;margin:0 auto 28px;font-size:1.05rem;color:#5a4d47;}
+.enroll-cta a{display:inline-block;padding:14px 36px;border-radius:6px;font-family:'Trebuchet MS',sans-serif;font-weight:700;text-decoration:none;font-size:0.95rem;transition:transform 0.15s,box-shadow 0.15s;animation:enroll-pulse 2.6s ease-in-out infinite;}
+.enroll-cta a:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,0.12);}
+@keyframes enroll-pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,16,46,0.4);}50%{box-shadow:0 0 0 10px rgba(200,16,46,0);}}
+@media(prefers-reduced-motion:reduce){.enroll-cta a{animation:none;}}
+
+/* DONATE */
+.donate-section{background:linear-gradient(180deg,#fdf6f2 0%,#fff 100%);text-align:center;}
+.donate-section p.lead{max-width:640px;margin:0 auto 40px;font-size:1.05rem;color:#5a4d47;}
+.donate-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;max-width:900px;margin:0 auto 36px;}
+.donate-card{background:#fff;border:2px solid var(--grey-line);border-radius:10px;padding:32px 16px;cursor:pointer;transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;}
+.donate-card:hover{border-color:var(--red);transform:translateY(-4px);box-shadow:0 8px 18px rgba(0,0,0,0.08);}
+.donate-card .amount{font-family:'Trebuchet MS',sans-serif;font-size:2rem;font-weight:700;color:var(--red);margin-bottom:6px;}
+.donate-card .label{font-size:0.85rem;color:var(--bronze);font-weight:600;font-family:'Trebuchet MS',sans-serif;text-transform:uppercase;letter-spacing:1px;}
+.donate-custom{font-family:'Trebuchet MS',sans-serif;font-weight:700;background:none;border:2px solid var(--bronze);color:var(--bronze);padding:14px 36px;border-radius:6px;font-size:0.95rem;cursor:pointer;transition:all 0.2s;}
+.donate-custom:hover{background:var(--bronze);color:#fff;}
+
+/* FOOTER */
+footer{background:#fdf6f2;border-top:1px solid var(--grey-line);padding:40px 6%;text-align:center;font-size:0.9rem;color:#9a8b84;font-family:'Trebuchet MS',sans-serif;}
+footer .crest-small{height:50px;margin-bottom:12px;opacity:0.85;}
+.footer-contact{margin-top:10px;font-size:0.85rem;color:#9a8b84;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;}
+.footer-divider{color:#ccc;}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .nav-links{gap:16px;}
+  .nav-links a{font-size:0.82rem;}
+  .brand span{font-size:1.05rem;}
+}
+@media(max-width:900px){
+  .about-grid,.staff-grid,.tuition-grid{grid-template-columns:repeat(2,1fr);}
+  .admissions-wrap{grid-template-columns:1fr;}
+  .donate-grid{grid-template-columns:repeat(2,1fr);}
+  .menu-toggle{display:flex;}
+  .brand-name-full{display:none;}
+  .brand-name-short{display:inline;}
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;background:#fff;border-bottom:1px solid var(--grey-line);padding:8px 6% 16px;gap:0;box-shadow:0 8px 16px rgba(0,0,0,0.05);}
+  .nav-links.open{display:flex;}
+  .nav-links li{border-top:1px solid var(--grey-line);}
+  .nav-links a{display:block;padding:14px 4px;font-size:1.05rem;}
+  .nav-portal{margin-left:0;padding-left:0;border-left:none;border-top:2px solid var(--bronze) !important;}
+  .nav-portal a{border:none !important;border-radius:0 !important;padding:14px 4px !important;color:var(--bronze) !important;background:none !important;}
+  .nav-portal a.active{background:none !important;color:var(--bronze) !important;}
+  .hero h1{font-size:2.2rem;}
+  .schedule-table{gap:0 8px;}
+  .schedule-item .day-name{font-size:0.85rem;}
+  .day-tag{width:80px;padding:5px 0;font-size:0.75rem;}
+  .events-grid{grid-template-columns:1fr;gap:20px;}
+}
+@media(max-width:600px){
+  nav{padding:14px 5%;}
+  .brand span{font-size:1.05rem;}
+  .brand img{height:40px;}
+  section{padding:48px 6%;}
+  .section-header{margin-bottom:32px;}
+  .section-header h2{font-size:1.7rem;}
+  .about-grid,.tuition-grid,.donate-grid{grid-template-columns:1fr;gap:18px;}
+  .about-card{padding:26px 20px;}
+  .about-intro{font-size:0.98rem;margin-bottom:32px;}
+  .video-placeholder{margin-top:32px;border-radius:8px;}
+  .video-icon{width:48px;height:48px;font-size:1.1rem;}
+  .schedule-bar{padding:22px 20px;margin-top:28px;}
+  .schedule-table{display:flex;flex-direction:column;}
+  .schedule-item{flex-direction:row;align-items:center;justify-content:space-between;gap:0;padding:12px 0;border-bottom:1px solid var(--grey-line);}
+  .schedule-item:last-child{border-bottom:none;}
+  .schedule-item .day-name{border-bottom:none;padding-bottom:0;width:auto;text-align:left;}
+  .stats-banner{margin-top:36px;padding-top:32px;gap:28px;}
+  .stat-number{font-size:2.4rem;}
+  .admissions-wrap{gap:32px;}
+  .steps li{gap:14px;margin-bottom:22px;}
+  .steps li::before{width:34px;height:34px;font-size:0.9rem;}
+  .admissions-card{padding:28px 22px;}
+  .tuition-card{padding:26px 20px;}
+  .tuition-amount{font-size:2rem;}
+  .tuition-card-wide{padding:24px 20px;}
+  .tuition-wide-main{flex-direction:column;align-items:center;text-align:center;gap:14px;}
+  .tuition-wide-text p{text-align:center;}
+  .staff-grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:140px;overflow-x:auto;gap:24px;margin:0 -6%;padding:4px 6% 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:flex-start;}
+  .staff-grid::-webkit-scrollbar{display:none;}
+  .staff-card{scroll-snap-align:start;flex-shrink:0;}
+  .staff-photo{width:100px;height:100px;font-size:1.4rem;}
+  .page-header{padding:40px 6% 36px;}
+  .page-header h1{font-size:1.9rem;}
+}
+
+/* Clickable brand logo */
+.brand{ text-decoration:none; }
+.brand:hover span{ text-decoration:underline; }
+
+/* Preview icon letters */
+.preview-icon-text{
+  width:64px;height:64px;border-radius:50%;background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 18px;
+  font-family:'Trebuchet MS',sans-serif;font-weight:700;
+  font-size:1.3rem;color:#fff;letter-spacing:1px;
+}
+.preview-icon-text.bronze{ background:var(--bronze); }
