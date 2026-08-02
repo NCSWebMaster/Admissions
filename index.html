@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apply | Northridge Community School</title>
 <link rel="stylesheet" href="styles.css?v=1">
-<link rel="stylesheet" href="apply.css?v=4">
+<link rel="stylesheet" href="apply.css?v=5">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -61,6 +61,7 @@
       <span class="apply-step-dot" data-step="2"></span>
       <span class="apply-step-dot" data-step="3"></span>
       <span class="apply-step-dot" data-step="4"></span>
+      <span class="apply-step-dot" data-step="5"></span>
     </div>
 
     <!-- STEP 1: STUDENT INFO -->
@@ -150,8 +151,28 @@
       </div>
     </div>
 
-    <!-- STEP 3: STUDENT NEEDS & FAMILY CONTEXT -->
+    <!-- STEP 3: PASTORAL REFERENCE -->
     <div class="apply-card apply-step" data-step="3" style="display:none;">
+      <div class="apply-section-title">Pastoral Reference</div>
+      <div class="apply-section-sub">Our admissions committee asks for a reference from a pastor or church leader who knows your family well.</div>
+
+      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
+        Download the form below and give it to your pastor or church leader to complete. They can return it directly to
+        <a href="mailto:admissions@northridgecommunityschool.com" style="color:var(--bronze);">admissions@northridgecommunityschool.com</a>
+        or by mail, or you're welcome to upload a completed copy here if you already have one.
+      </p>
+
+      <a href="pastoral-reference.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Pastoral Reference Form</a>
+
+      <div class="apply-field">
+        <label>Upload Completed Reference <span class="hint">(optional)</span></label>
+        <input type="file" id="pastoralRefFile" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+      <div id="pastoralRefStatus" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
+    </div>
+
+    <!-- STEP 4: STUDENT NEEDS & FAMILY CONTEXT -->
+    <div class="apply-card apply-step" data-step="4" style="display:none;">
       <div class="apply-section-title">Student Needs</div>
       <div class="apply-section-sub">This helps us support your student well from day one.</div>
 
@@ -192,8 +213,8 @@
       </div>
     </div>
 
-    <!-- STEP 4: EMERGENCY CONTACT & AGREEMENT -->
-    <div class="apply-card apply-step" data-step="4" style="display:none;">
+    <!-- STEP 5: EMERGENCY CONTACT & AGREEMENT -->
+    <div class="apply-card apply-step" data-step="5" style="display:none;">
       <div class="apply-section-title">Emergency Contact</div>
       <div class="apply-section-sub">Someone we can reach if a parent/guardian is unavailable <span class="hint">(optional)</span>.</div>
       <div class="apply-row">
@@ -271,6 +292,6 @@
 
 <div class="apply-toast" id="toast"></div>
 
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
