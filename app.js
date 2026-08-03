@@ -33,6 +33,7 @@ document.getElementById('f-grade').innerHTML = '<option value="">— Select Grad
 
 // ── STATE ────────────────────────────────────────────────────
 let currentCode = null;
+let lastApplicationData = null;
 let currentStep = 1;
 const TOTAL_STEPS = 6;
 let schoolRowCount = 0;
@@ -90,6 +91,7 @@ async function attemptValidateCode(code) {
   }
 
   if (data.status === 'submitted') {
+    lastApplicationData = data;
     document.getElementById('submittedStudentName').textContent = data.student_full_name || 'your student';
     showOnly('submittedScreen');
     return;
@@ -123,6 +125,10 @@ function showDecidedScreen(data) {
 
 // ── PREFILL ──────────────────────────────────────────────────
 function prefillForm(data) {
+  window._prefillParentData = {
+    parent1_name: data.parent1_name, parent1_email: data.parent1_email, parent1_phone: data.parent1_phone,
+    parent2_name: data.parent2_name, parent2_email: data.parent2_email, parent2_phone: data.parent2_phone
+  };
   document.getElementById('f-student-name').value = data.student_full_name || '';
   document.getElementById('f-nickname').value = data.nickname || '';
   document.getElementById('f-age').value = data.age || '';
@@ -403,7 +409,112 @@ document.getElementById('applicationForm').addEventListener('submit', async (e) 
   }
 
   document.getElementById('submittedStudentName').textContent = document.getElementById('f-student-name').value.trim() || 'your student';
+
+  // Build the same shape validate_admission_code returns, so the print
+  // function works identically whether printing right after submit or
+  // on a later return visit.
+  lastApplicationData = {
+    student_full_name: payload.p_student_full_name, nickname: payload.p_nickname, age: payload.p_age,
+    dob: payload.p_dob, gender: payload.p_gender, anticipated_grade: payload.p_anticipated_grade,
+    previous_schools: payload.p_previous_schools, last_grade_completed: payload.p_last_grade_completed,
+    repeated_grade: payload.p_repeated_grade, repeated_grade_explain: payload.p_repeated_grade_explain,
+    disciplinary_history: payload.p_disciplinary_history, disciplinary_explain: payload.p_disciplinary_explain,
+    learning_needs: payload.p_learning_needs, learning_needs_explain: payload.p_learning_needs_explain,
+    medical_notes: payload.p_medical_notes, siblings: payload.p_siblings,
+    church_affiliation: payload.p_church_affiliation, referral_source: payload.p_referral_source,
+    emergency_contact_name: payload.p_emergency_contact_name,
+    emergency_contact_relationship: payload.p_emergency_contact_relationship,
+    emergency_contact_phone: payload.p_emergency_contact_phone,
+    agreement_accepted: payload.p_agreement_accepted, signature_name: payload.p_signature_name,
+    signature_date: payload.p_signature_date
+  };
+  // Parent info isn't collected on this form (it's coordinator-entered), so
+  // carry it over from whatever validate_admission_code originally returned.
+  if (window._prefillParentData) Object.assign(lastApplicationData, window._prefillParentData);
+
   showOnly('submittedScreen');
+});
+
+// ── PRINT / SAVE APPLICATION AS PDF ─────────────────────────
+function buildApplicationPrintHTML(a) {
+  const yn = (v, explain) => v === true ? 'Yes' + (explain ? ' — ' + esc(explain) : '') : v === false ? 'No' : '—';
+  const schools = Array.isArray(a.previous_schools) ? a.previous_schools : [];
+  const siblings = Array.isArray(a.siblings) ? a.siblings : [];
+  const section = (title, rows) => `
+    <div style="margin-bottom:24px;">
+      <h2 style="font-size:1.05rem;color:#B07D4F;border-bottom:2px solid #E6E1DC;padding-bottom:6px;margin-bottom:10px;">${title}</h2>
+      ${rows}
+    </div>`;
+  const row = (label, value) => `<div style="display:flex;padding:6px 0;border-bottom:1px solid #f3eee9;font-size:0.9rem;"><div style="width:220px;flex-shrink:0;color:#9a8b84;font-weight:bold;">${label}</div><div style="color:#3A2E2A;">${value || '—'}</div></div>`;
+
+  return `
+    ${section('Student Information',
+      row('Full Name', esc(a.student_full_name)) + row('Nickname', esc(a.nickname)) + row('Age', esc(a.age)) +
+      row('Date of Birth', esc(a.dob)) + row('Gender', esc(a.gender)) + row('Anticipated Grade', esc(a.anticipated_grade))
+    )}
+    ${section('School History',
+      (schools.length ? schools.map(s => row('Previous School', esc([s.name, s.city, s.state].filter(Boolean).join(', ')))).join('') : row('Previous Schools', 'None listed')) +
+      row('Last Grade Completed', esc(a.last_grade_completed)) +
+      row('Repeated a Grade', yn(a.repeated_grade, a.repeated_grade_explain)) +
+      row('Disciplinary History', yn(a.disciplinary_history, a.disciplinary_explain))
+    )}
+    ${section('Student Needs',
+      row('Learning Needs / IEP / 504', yn(a.learning_needs, a.learning_needs_explain)) + row('Medical Notes', esc(a.medical_notes))
+    )}
+    ${section('Family Context',
+      (siblings.length ? siblings.map(s => row('Sibling', esc([s.name, s.age ? 'Age ' + s.age : ''].filter(Boolean).join(', ')))).join('') : row('Siblings', 'None listed')) +
+      row('Church Affiliation', esc(a.church_affiliation)) + row('How They Heard About NCS', esc(a.referral_source))
+    )}
+    ${section('Parent / Guardian',
+      row('Parent 1', esc([a.parent1_name, a.parent1_email, a.parent1_phone].filter(Boolean).join(' · '))) +
+      (a.parent2_name ? row('Parent 2', esc([a.parent2_name, a.parent2_email, a.parent2_phone].filter(Boolean).join(' · '))) : '')
+    )}
+    ${section('Emergency Contact',
+      row('Name', esc(a.emergency_contact_name)) + row('Relationship', esc(a.emergency_contact_relationship)) + row('Phone', esc(a.emergency_contact_phone))
+    )}
+    ${section('Agreement',
+      row('Statement of Faith Agreement', a.agreement_accepted ? 'Agreed' : 'Not agreed') +
+      row('Parent Signature', esc(a.signature_name)) + row('Date', esc(a.signature_date))
+    )}
+  `;
+}
+
+function openApplicationPrintWindow(title, bodyHTML) {
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <title>${title} — NCS</title>
+  <style>
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    body{ font-family:Arial,sans-serif; color:#3A2E2A; padding:32px; }
+    .print-header{ text-align:center; margin-bottom:32px; border-bottom:3px solid #C8102E; padding-bottom:20px; }
+    .print-header img{ height:80px; margin-bottom:12px; }
+    .print-header h1{ font-size:1.5rem; color:#C8102E; margin-bottom:4px; }
+    .print-header p{ font-size:0.85rem; color:#888; }
+    .print-footer{ margin-top:40px; text-align:center; font-size:0.78rem; color:#aaa; border-top:1px solid #E6E1DC; padding-top:16px; }
+    @media print{ body{ padding:16px; } }
+  </style>
+</head>
+<body>
+  <div class="print-header">
+    <img src="https://ncswebmaster.github.io/NCS/logo.png" alt="NCS Logo">
+    <h1>Northridge Community School</h1>
+    <p>${title} · Generated ${new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}</p>
+  </div>
+  ${bodyHTML}
+  <div class="print-footer">
+    Northridge Community School · Where Godly Character meets Great Academics · www.northridgecommunityschool.com
+  </div>
+</body>
+</html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 800);
+}
+
+document.getElementById('printApplicationBtn').addEventListener('click', () => {
+  if (!lastApplicationData) { showToast('Application data not available.'); return; }
+  openApplicationPrintWindow('Admission Application — ' + (lastApplicationData.student_full_name || 'Applicant'), buildApplicationPrintHTML(lastApplicationData));
 });
 
 init();
