@@ -34,7 +34,7 @@ document.getElementById('f-grade').innerHTML = '<option value="">— Select Grad
 // ── STATE ────────────────────────────────────────────────────
 let currentCode = null;
 let currentStep = 1;
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 let schoolRowCount = 0;
 let siblingRowCount = 0;
 
@@ -299,6 +299,15 @@ function goToStep(step) {
     dot.classList.toggle('active', dotStep === step);
     dot.classList.toggle('done', dotStep < step);
   });
+
+  // Attach the action buttons (Back/Continue/Submit/Save) to the bottom of
+  // whichever step card is currently showing, so they read as part of that
+  // card rather than a separate floating bar — this is what makes Submit
+  // visually land inside the final Agreement card.
+  const activeStepCard = document.querySelector(`.apply-step[data-step="${step}"]`);
+  const actionsCard = document.getElementById('stepActionsCard');
+  if (activeStepCard && actionsCard) activeStepCard.appendChild(actionsCard);
+
   document.getElementById('prevStepBtn').style.display = step > 1 ? 'block' : 'none';
   document.getElementById('nextStepBtn').style.display = step < TOTAL_STEPS ? 'block' : 'none';
   document.getElementById('submitAppBtn').style.display = step === TOTAL_STEPS ? 'block' : 'none';

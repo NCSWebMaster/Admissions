@@ -74,8 +74,15 @@
 
 /* Step action buttons (Back / Continue / Submit) — equal width, no more
    inconsistent sizing between them */
+/* Step action buttons (Back / Continue / Submit) — equal width, no more
+   inconsistent sizing between them */
 .apply-step-actions{ display:flex; gap:12px; }
 .apply-step-actions button{ flex:1 1 0; width:auto; margin-top:0; padding:14px 20px; font-size:0.95rem; }
+
+/* This block gets moved via JS into whichever step card is active, so it's
+   styled to blend in as the trailing content of that card rather than as
+   its own separate card. */
+.apply-step-actions-card{ text-align:center; margin-top:28px; padding-top:24px; border-top:1px solid var(--grey-line); }
 
 /* Statement of Faith accordion — must expand before agreeing */
 .apply-accordion{ border:1px solid var(--grey-line); border-radius:8px; overflow:hidden; margin-bottom:14px; }
