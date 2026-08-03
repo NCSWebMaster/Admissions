@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apply | Northridge Community School</title>
 <link rel="stylesheet" href="styles.css?v=1">
-<link rel="stylesheet" href="apply.css?v=5">
+<link rel="stylesheet" href="apply.css?v=6">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -62,6 +62,7 @@
       <span class="apply-step-dot" data-step="3"></span>
       <span class="apply-step-dot" data-step="4"></span>
       <span class="apply-step-dot" data-step="5"></span>
+      <span class="apply-step-dot" data-step="6"></span>
     </div>
 
     <!-- STEP 1: STUDENT INFO -->
@@ -213,7 +214,7 @@
       </div>
     </div>
 
-    <!-- STEP 5: EMERGENCY CONTACT & AGREEMENT -->
+    <!-- STEP 5: EMERGENCY CONTACT -->
     <div class="apply-card apply-step" data-step="5" style="display:none;">
       <div class="apply-section-title">Emergency Contact</div>
       <div class="apply-section-sub">Someone we can reach if a parent/guardian is unavailable <span class="hint">(optional)</span>.</div>
@@ -233,8 +234,11 @@
           <input type="tel" id="f-ec-phone">
         </div>
       </div>
+    </div>
 
-      <div class="apply-section-title" style="margin-top:24px;">Agreement</div>
+    <!-- STEP 6: STATEMENT OF FAITH & AGREEMENT -->
+    <div class="apply-card apply-step" data-step="6" style="display:none;">
+      <div class="apply-section-title">Agreement</div>
 
       <div class="apply-accordion" id="sofAccordion">
         <button type="button" class="apply-accordion-header" id="sofAccordionToggle">
@@ -267,7 +271,7 @@
       </div>
     </div>
 
-    <div class="apply-card" style="text-align:center;">
+    <div id="stepActionsCard" class="apply-step-actions-card">
       <div id="formError" class="code-error"></div>
       <div class="apply-step-actions">
         <button type="button" class="apply-btn-secondary" id="prevStepBtn" style="display:none;">Back</button>
@@ -292,6 +296,6 @@
 
 <div class="apply-toast" id="toast"></div>
 
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
