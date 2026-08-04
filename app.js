@@ -4,6 +4,21 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const GRADE_OPTIONS = ['TK','Kindergarten','1st Grade','2nd Grade','3rd Grade','4th Grade','5th Grade','6th Grade','7th Grade','8th Grade'];
 
+function formatPhoneInput(e) {
+  let v = e.target.value.replace(/\D/g,'').slice(0,10);
+  if (v.length >= 7) v = '(' + v.slice(0,3) + ') ' + v.slice(3,6) + '-' + v.slice(6);
+  else if (v.length >= 4) v = '(' + v.slice(0,3) + ') ' + v.slice(3);
+  else if (v.length > 0) v = '(' + v;
+  e.target.value = v;
+}
+document.getElementById('f-ec-phone').addEventListener('input', formatPhoneInput);
+
+const US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+function stateOptionsHTML(selected) {
+  return '<option value="">— Select —</option>' +
+    US_STATES.map(s => `<option value="${s}"${s === selected ? ' selected' : ''}>${s}</option>`).join('');
+}
+
 function esc(value) {
   if (value === null || value === undefined) return '';
   return String(value)
@@ -30,6 +45,23 @@ function showOnly(id) {
 
 document.getElementById('f-grade').innerHTML = '<option value="">— Select Grade —</option>' +
   GRADE_OPTIONS.map(g => `<option value="${g}">${g}</option>`).join('');
+document.getElementById('f-last-grade').innerHTML = '<option value="">— Select Grade —</option>' +
+  GRADE_OPTIONS.map(g => `<option value="${g}">${g}</option>`).join('');
+
+// ── AGE AUTO-CALCULATION FROM DOB ───────────────────────────
+function calculateAgeFromDob(dobStr) {
+  if (!dobStr) return '';
+  const dob = new Date(dobStr + 'T00:00:00');
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const hasHadBirthdayThisYear = (today.getMonth() > dob.getMonth()) ||
+    (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
+  if (!hasHadBirthdayThisYear) age--;
+  return age >= 0 ? age : '';
+}
+document.getElementById('f-dob').addEventListener('input', (e) => {
+  document.getElementById('f-age').value = calculateAgeFromDob(e.target.value);
+});
 
 // ── STATE ────────────────────────────────────────────────────
 let currentCode = null;
@@ -131,8 +163,8 @@ function prefillForm(data) {
   };
   document.getElementById('f-student-name').value = data.student_full_name || '';
   document.getElementById('f-nickname').value = data.nickname || '';
-  document.getElementById('f-age').value = data.age || '';
   document.getElementById('f-dob').value = data.dob || '';
+  document.getElementById('f-age').value = calculateAgeFromDob(data.dob) || (data.age || '');
   document.getElementById('f-gender').value = data.gender || '';
   document.getElementById('f-grade').value = data.anticipated_grade || '';
   document.getElementById('f-last-grade').value = data.last_grade_completed || '';
@@ -256,7 +288,7 @@ function addSchoolRow(prefill) {
       <div class="apply-field"><label>City</label><input type="text" class="school-city" value="${esc(prefill && prefill.city || '')}"></div>
     </div>
     <div class="apply-row single">
-      <div class="apply-field"><label>State</label><input type="text" class="school-state" value="${esc(prefill && prefill.state || '')}"></div>
+      <div class="apply-field"><label>State</label><select class="school-state">${stateOptionsHTML(prefill && prefill.state)}</select></div>
     </div>`;
   document.getElementById('schoolsContainer').appendChild(div);
 }
