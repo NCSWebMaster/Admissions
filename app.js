@@ -549,4 +549,8 @@ document.getElementById('printApplicationBtn').addEventListener('click', () => {
   openApplicationPrintWindow('Admission Application — ' + (lastApplicationData.student_full_name || 'Applicant'), buildApplicationPrintHTML(lastApplicationData));
 });
 
+document.getElementById('decidedBackBtn').addEventListener('click', () => {
+  window.location.href = window.location.origin + window.location.pathname;
+});
+
 init();
