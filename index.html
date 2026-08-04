@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apply | Northridge Community School</title>
 <link rel="stylesheet" href="styles.css?v=1">
-<link rel="stylesheet" href="apply.css?v=7">
+<link rel="stylesheet" href="apply.css?v=8">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -20,7 +20,7 @@
 
 <div class="page-header">
   <h1>Admission Application</h1>
-  <p>Enter your access code.</p>
+  <p>Enter the access code your admissions coordinator sent you to begin or continue your application.</p>
 </div>
 
 <div class="apply-wrap">
@@ -45,6 +45,7 @@
     <span class="apply-status-badge" id="decidedBadge"></span>
     <h2 id="decidedTitle"></h2>
     <p id="decidedMessage"></p>
+    <button type="button" class="apply-btn-secondary" id="decidedBackBtn" style="max-width:280px;margin:28px auto 0;">Back to Start</button>
   </div>
 
   <!-- SUBMITTED / CONFIRMATION SCREEN -->
@@ -298,6 +299,6 @@
 
 <div class="apply-toast" id="toast"></div>
 
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>
