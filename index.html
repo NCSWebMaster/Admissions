@@ -20,7 +20,7 @@
 
 <div class="page-header">
   <h1>Admission Application</h1>
-  <p>Enter the access code your admissions coordinator sent you to begin or continue your application.</p>
+  <p>Enter your access code.</p>
 </div>
 
 <div class="apply-wrap">
@@ -84,14 +84,14 @@
           <input type="text" id="f-nickname">
         </div>
         <div class="apply-field">
-          <label>Age</label>
-          <input type="number" id="f-age" min="1" max="20">
+          <label>Date of Birth</label>
+          <input type="date" id="f-dob">
         </div>
       </div>
       <div class="apply-row">
         <div class="apply-field">
-          <label>Date of Birth</label>
-          <input type="date" id="f-dob">
+          <label>Age <span class="hint">(auto-filled from DOB)</span></label>
+          <input type="number" id="f-age" min="1" max="20" readonly style="background:#f3eee9;">
         </div>
         <div class="apply-field">
           <label>Gender</label>
@@ -121,7 +121,7 @@
       <div class="apply-row single" style="margin-top:20px;">
         <div class="apply-field">
           <label>Last Grade Completed</label>
-          <input type="text" id="f-last-grade" placeholder="e.g. 2nd Grade">
+          <select id="f-last-grade"></select>
         </div>
       </div>
 
@@ -298,6 +298,6 @@
 
 <div class="apply-toast" id="toast"></div>
 
-<script src="app.js?v=6"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>
