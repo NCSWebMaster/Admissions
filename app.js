@@ -41,6 +41,8 @@ function showOnly(id) {
     const el = document.getElementById(sid);
     if (el) el.style.display = (sid === id) ? (sid === 'applicationForm' ? 'block' : 'block') : 'none';
   });
+  const sub = document.getElementById('pageHeaderSub');
+  if (sub) sub.style.display = (id === 'codeScreen') ? 'block' : 'none';
 }
 
 document.getElementById('f-grade').innerHTML = '<option value="">— Select Grade —</option>' +
