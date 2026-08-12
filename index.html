@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apply | Northridge Community School</title>
 <link rel="stylesheet" href="styles.css?v=1">
-<link rel="stylesheet" href="apply.css?v=8">
+<link rel="stylesheet" href="apply.css?v=9">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -66,6 +66,7 @@
       <span class="apply-step-dot" data-step="4"></span>
       <span class="apply-step-dot" data-step="5"></span>
       <span class="apply-step-dot" data-step="6"></span>
+      <span class="apply-step-dot" data-step="7"></span>
     </div>
 
     <!-- STEP 1: STUDENT INFO -->
@@ -155,8 +156,15 @@
       </div>
     </div>
 
-    <!-- STEP 3: PASTORAL REFERENCE -->
+    <!-- STEP 3: BEHAVIOR SKILLS QUESTIONNAIRE -->
     <div class="apply-card apply-step" data-step="3" style="display:none;">
+      <div class="apply-section-title">Behavior Skills Questionnaire</div>
+      <div class="apply-section-sub">In an attempt to partner with you, please consider how regularly your child exhibits these behaviors. We're not looking for perfect children — just honest parental awareness. This helps our team, not your student's chances.</div>
+      <div id="behaviorQuestionsContainer"></div>
+    </div>
+
+    <!-- STEP 4: PASTORAL REFERENCE -->
+    <div class="apply-card apply-step" data-step="4" style="display:none;">
       <div class="apply-section-title">Pastoral Reference</div>
       <div class="apply-section-sub">Our admissions committee asks for a reference from a pastor or church leader who knows your family well.</div>
 
@@ -175,8 +183,8 @@
       <div id="pastoralRefStatus" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
     </div>
 
-    <!-- STEP 4: STUDENT NEEDS & FAMILY CONTEXT -->
-    <div class="apply-card apply-step" data-step="4" style="display:none;">
+    <!-- STEP 5: STUDENT NEEDS & FAMILY CONTEXT -->
+    <div class="apply-card apply-step" data-step="5" style="display:none;">
       <div class="apply-section-title">Student Needs</div>
       <div class="apply-section-sub">This helps us support your student well from day one.</div>
 
@@ -217,8 +225,8 @@
       </div>
     </div>
 
-    <!-- STEP 5: EMERGENCY CONTACT -->
-    <div class="apply-card apply-step" data-step="5" style="display:none;">
+    <!-- STEP 6: EMERGENCY CONTACT -->
+    <div class="apply-card apply-step" data-step="6" style="display:none;">
       <div class="apply-section-title">Emergency Contact</div>
       <div class="apply-section-sub">Someone we can reach if a parent/guardian is unavailable <span class="hint">(optional)</span>.</div>
       <div class="apply-row">
@@ -239,8 +247,8 @@
       </div>
     </div>
 
-    <!-- STEP 6: STATEMENT OF FAITH & AGREEMENT -->
-    <div class="apply-card apply-step" data-step="6" style="display:none;">
+    <!-- STEP 7: STATEMENT OF FAITH & AGREEMENT -->
+    <div class="apply-card apply-step" data-step="7" style="display:none;">
       <div class="apply-section-title">Agreement</div>
 
       <div class="apply-accordion" id="sofAccordion">
@@ -299,6 +307,6 @@
 
 <div class="apply-toast" id="toast"></div>
 
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
