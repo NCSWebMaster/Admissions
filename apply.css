@@ -94,11 +94,3 @@
   .apply-card{ padding:24px 18px; }
 }
 
-/* Behavior Skills Questionnaire */
-.apply-behavior-section{ margin-bottom:24px; }
-.apply-behavior-section-title{ font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.95rem; color:var(--red); border-bottom:2px solid var(--grey-line); padding-bottom:6px; margin-bottom:14px; }
-.apply-rating-row-wrap{ margin-bottom:16px; }
-.apply-rating-question{ font-size:0.9rem; color:var(--ink); margin-bottom:8px; }
-.apply-rating-row{ display:flex; gap:6px; flex-wrap:wrap; }
-.apply-rating-btn{ min-width:40px; padding:9px 10px; border:2px solid var(--grey-line); border-radius:6px; background:#fff; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.82rem; color:#6b5e58; cursor:pointer; transition:all 0.15s; }
-.apply-rating-btn.selected{ border-color:var(--red); color:var(--red); background:#fdf6f2; }

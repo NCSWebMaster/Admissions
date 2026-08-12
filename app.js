@@ -12,6 +12,7 @@ function formatPhoneInput(e) {
   e.target.value = v;
 }
 document.getElementById('f-ec-phone').addEventListener('input', formatPhoneInput);
+document.getElementById('f-ncsref-phone').addEventListener('input', formatPhoneInput);
 
 const US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
 function stateOptionsHTML(selected) {
@@ -69,7 +70,7 @@ document.getElementById('f-dob').addEventListener('input', (e) => {
 let currentCode = null;
 let lastApplicationData = null;
 let currentStep = 1;
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 10;
 let schoolRowCount = 0;
 let siblingRowCount = 0;
 
@@ -198,7 +199,9 @@ function prefillForm(data) {
   document.getElementById('siblingsContainer').innerHTML = '';
   siblings.forEach(s => addSiblingRow(s));
 
-  renderBehaviorQuestionnaire();
+  document.getElementById('f-ncsref-name').value = data.ncs_family_reference_name || '';
+  document.getElementById('f-ncsref-email').value = data.ncs_family_reference_email || '';
+  document.getElementById('f-ncsref-phone').value = data.ncs_family_reference_phone || '';
 }
 
 function setYesNo(groupId, value) {
@@ -213,176 +216,41 @@ function toggleExplainWrap(id, show) {
   document.getElementById(id).style.display = show ? 'block' : 'none';
 }
 
-// ── PASTORAL REFERENCE UPLOAD (optional) ────────────────────
-document.getElementById('pastoralRefFile').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  const statusEl = document.getElementById('pastoralRefStatus');
-  if (!file) return;
+// ── REFERENCE UPLOADS (Pastoral, Behavior, Mature Christian, Teacher) ──
+// One shared handler for all "Upload Completed ___" file inputs — each is
+// tagged with data-ref-type and stored in the shared admission-references
+// bucket, then attached to the application via one shared RPC.
+document.querySelectorAll('.apply-ref-upload').forEach(input => {
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    const refType = input.dataset.refType;
+    const statusEl = document.querySelector(`.apply-ref-status[data-ref-type="${refType}"]`);
+    if (!file) return;
 
-  if (!currentCode) {
-    statusEl.textContent = 'Something went wrong — please refresh and try again.';
-    return;
-  }
+    if (!currentCode) {
+      if (statusEl) statusEl.textContent = 'Something went wrong — please refresh and try again.';
+      return;
+    }
 
-  statusEl.textContent = 'Uploading…';
-  statusEl.style.color = '#9a8b84';
+    if (statusEl) { statusEl.textContent = 'Uploading…'; statusEl.style.color = '#9a8b84'; }
 
-  const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const path = `${currentCode}/${Date.now()}-${cleanName}`;
+    const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const path = `${currentCode}/${refType}/${Date.now()}-${cleanName}`;
 
-  const { error: uploadError } = await sb.storage.from('pastoral-references').upload(path, file);
-  if (uploadError) {
-    statusEl.textContent = 'Upload failed — please try again.';
-    statusEl.style.color = 'var(--red)';
-    return;
-  }
+    const { error: uploadError } = await sb.storage.from('admission-references').upload(path, file);
+    if (uploadError) {
+      if (statusEl) { statusEl.textContent = 'Upload failed — please try again.'; statusEl.style.color = 'var(--red)'; }
+      return;
+    }
 
-  const { data, error } = await sb.rpc('attach_pastoral_reference', { p_code: currentCode, p_file_path: path });
-  if (error || !data || !data.success) {
-    statusEl.textContent = 'Uploaded, but could not save — please contact the office.';
-    statusEl.style.color = 'var(--red)';
-    return;
-  }
+    const { data, error } = await sb.rpc('attach_admission_reference', { p_code: currentCode, p_reference_type: refType, p_file_path: path });
+    if (error || !data || !data.success) {
+      if (statusEl) { statusEl.textContent = 'Uploaded, but could not save — please contact the office.'; statusEl.style.color = 'var(--red)'; }
+      return;
+    }
 
-  statusEl.textContent = `Uploaded: ${file.name}`;
-  statusEl.style.color = '#16a34a';
-});
-
-// ── BEHAVIOR SKILLS QUESTIONNAIRE ───────────────────────────
-const BEHAVIOR_RATING_OPTIONS = [
-  { value: '1', label: '1' }, { value: '2', label: '2' }, { value: '3', label: '3' },
-  { value: '4', label: '4' }, { value: '5', label: '5' },
-  { value: 'na', label: 'N/A' }, { value: 'unsure', label: '?' }
-];
-
-const BEHAVIOR_SECTIONS = [
-  { key: 'meeting', title: 'Meeting and Greeting', questions: [
-    'Responds in a friendly way, smiles',
-    'Meets the eyes of a person who speaks to them',
-    'Knows when it is appropriate and safe to greet a stranger',
-    'Greets adults respectfully with their titles (Mrs. Smith, Dr. Jones, Aunt Betty)',
-    'Knows how to get acquainted with peers',
-    'Volunteers appropriate information about himself'
-  ]},
-  { key: 'courtesy', title: 'Courtesy', questions: [
-    'Waits for his turn to talk without interrupting',
-    'Uses courteous phrases such as, "May I please?...Thank you...Excuse me."',
-    'Waits patiently for his turn in line, in a game, etc',
-    'Rushes to be first in line or play with a toy'
-  ]},
-  { key: 'conversation', title: 'Conversation and Communication', questions: [
-    'Communicates ideas logically or describes people, places and things accurately',
-    'Allows enough physical space between himself and others',
-    'Listens attentively and replies with understanding',
-    'Asks questions politely when he does not understand',
-    'Participates in conversations appropriately without monopolizing them',
-    'Interrupts',
-    'Knows what to say/do when pressured by others to do something wrong or against his conscience'
-  ]},
-  { key: 'conflict', title: 'Conflict Resolution / Problem Solving', questions: [
-    'Tolerates being teased and reacts good-naturedly',
-    'Refrains from angry outbursts when he is frustrated or does not get his way',
-    'Shares, gives up his own wishes willingly, and puts others first',
-    'Answers angry words with kind ones',
-    'Seeks help from appropriate people when he sees or experiences a need',
-    'Apologizes sincerely when he has wronged or hurt another, whether deliberately, thoughtlessly, or accidentally',
-    'Forgives and forgets willingly rather than holding a grudge',
-    'Is able to develop relationships with peers'
-  ]},
-  { key: 'group', title: 'Group Dynamics', questions: [
-    'Follows directions from the adult leader in a group',
-    'Works cooperatively with others, offering suggestions and contributing to a project\'s success',
-    'Chooses to play alone',
-    'Tends to be the one in charge of the game, song, or project',
-    'Excuses himself from activities that violate family or biblical standards',
-    'Able to play alone quietly',
-    'Talks excessively or blurts out answers in a group'
-  ]},
-  { key: 'focus', title: 'Concentration and Focus', questions: [
-    'Makes careless mistakes',
-    'Able to sustain attention in and complete tasks',
-    'Often loses things, easily distracted, or forgetful',
-    'Often fidgety',
-    'Able to remain seated at the dinner table, in a classroom, or in Sunday school',
-    'Flexible when routine is changed',
-    'Engages in repetitive movement or aimless wandering',
-    'Avoids tasks requiring sustained mental effort'
-  ]}
-];
-
-const BEHAVIOR_EXTRA_SECTION = {
-  key: 'extra58', title: 'For Students Entering 5th–8th Grade', questions: [
-    'Knows how to introduce people to each other',
-    'Is punctual when others are waiting (e.g. mealtime)',
-    'Discerns what is inappropriate to discuss',
-    'Knows how to change an inappropriate subject or excuse himself graciously',
-    'Takes a turn at leading a game, song, or project'
-  ]
-};
-
-const BEHAVIOR_5TH_8TH_GRADES = ['5th Grade','6th Grade','7th Grade','8th Grade'];
-
-function behaviorQuestionKey(sectionKey, index) {
-  return `${sectionKey}_${index + 1}`;
-}
-
-function renderBehaviorSection(section, savedResponses) {
-  const rowsHTML = section.questions.map((q, i) => {
-    const key = behaviorQuestionKey(section.key, i);
-    const saved = savedResponses && savedResponses[key];
-    const buttonsHTML = BEHAVIOR_RATING_OPTIONS.map(opt =>
-      `<button type="button" class="apply-rating-btn ${saved === opt.value ? 'selected' : ''}" data-key="${key}" data-value="${opt.value}">${opt.label}</button>`
-    ).join('');
-    return `
-      <div class="apply-rating-row-wrap">
-        <div class="apply-rating-question">${esc(q)}</div>
-        <div class="apply-rating-row" data-question-key="${key}">${buttonsHTML}</div>
-      </div>`;
-  }).join('');
-
-  return `
-    <div class="apply-behavior-section">
-      <div class="apply-behavior-section-title">${esc(section.title)}</div>
-      ${rowsHTML}
-    </div>`;
-}
-
-function renderBehaviorQuestionnaire() {
-  const container = document.getElementById('behaviorQuestionsContainer');
-  if (!container) return;
-  const savedResponses = (lastApplicationData && lastApplicationData.behavior_responses) || window._behaviorDraft || {};
-  const grade = document.getElementById('f-grade').value;
-
-  let html = BEHAVIOR_SECTIONS.map(s => renderBehaviorSection(s, savedResponses)).join('');
-  if (BEHAVIOR_5TH_8TH_GRADES.includes(grade)) {
-    html += renderBehaviorSection(BEHAVIOR_EXTRA_SECTION, savedResponses);
-  }
-  container.innerHTML = html;
-
-  container.querySelectorAll('.apply-rating-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const row = btn.closest('.apply-rating-row');
-      row.querySelectorAll('.apply-rating-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    });
+    if (statusEl) { statusEl.textContent = `Uploaded: ${file.name}`; statusEl.style.color = '#16a34a'; }
   });
-}
-
-function collectBehaviorResponses() {
-  const responses = {};
-  document.querySelectorAll('#behaviorQuestionsContainer .apply-rating-row').forEach(row => {
-    const selected = row.querySelector('.apply-rating-btn.selected');
-    if (selected) responses[row.dataset.questionKey] = selected.dataset.value;
-  });
-  return responses;
-}
-
-// Re-render if the anticipated grade changes, so the 5th-8th section
-// appears/disappears without losing already-selected answers.
-document.getElementById('f-grade').addEventListener('change', () => {
-  const current = collectBehaviorResponses();
-  window._behaviorDraft = Object.assign({}, window._behaviorDraft, current);
-  renderBehaviorQuestionnaire();
 });
 
 // ── STATEMENT OF FAITH ACCORDION ────────────────────────────
@@ -525,7 +393,9 @@ function collectFormPayload() {
     p_agreement_accepted: document.getElementById('f-agreement').checked,
     p_signature_name: document.getElementById('f-signature-name').value.trim() || null,
     p_signature_date: document.getElementById('f-signature-date').value || null,
-    p_behavior_responses: collectBehaviorResponses()
+    p_ncs_family_reference_name: document.getElementById('f-ncsref-name').value.trim() || null,
+    p_ncs_family_reference_email: document.getElementById('f-ncsref-email').value.trim() || null,
+    p_ncs_family_reference_phone: document.getElementById('f-ncsref-phone').value.trim() || null
   };
 }
 
