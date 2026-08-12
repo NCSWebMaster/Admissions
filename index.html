@@ -54,6 +54,7 @@
     <h2>Thank You!</h2>
     <p>Your application for <strong id="submittedStudentName"></strong> has been received. Our admissions team will review it and follow up by email with next steps.</p>
     <p style="font-size:0.85rem;color:#9a8b84;margin-top:8px;">We've also emailed you a link to this page so you can return anytime.</p>
+    <div id="signatureStampMount" style="text-align:left;"></div>
     <button type="button" class="apply-btn-secondary" id="printApplicationBtn" style="max-width:320px;margin:20px auto 0;">Print / Save Your Application</button>
   </div>
 
@@ -165,9 +166,9 @@
       <div class="apply-section-sub">Our admissions committee asks for a reference from a pastor or church leader who knows your family well.</div>
 
       <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Download the form below and give it to your pastor or church leader to complete. They can return it directly to
-        <a href="mailto:admissions@northridgecommunityschool.com" style="color:var(--bronze);">admissions@northridgecommunityschool.com</a>
-        or by mail, or you're welcome to upload a completed copy here if you already have one.
+        Please download the form below and upload it here once complete. You can also send the form to
+        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a>
+        if you wish.
       </p>
 
       <a href="pastoral-reference.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Pastoral Reference Form</a>
@@ -185,9 +186,9 @@
       <div class="apply-section-sub">Please complete this questionnaire about your child's everyday behavior.</div>
 
       <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Download the form below, complete it yourself, and either email it to
-        <a href="mailto:admissions@northridgecommunityschool.com" style="color:var(--bronze);">admissions@northridgecommunityschool.com</a>,
-        mail it in, or upload a completed copy here.
+        Please download the form below and upload it here once complete. You can also send the form to
+        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a>
+        if you wish.
       </p>
 
       <a href="behavior-skills-questionnaire.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Behavior Skills Questionnaire</a>
@@ -205,9 +206,9 @@
       <div class="apply-section-sub">A reference from a mature Christian who knows your family well (other than your pastor).</div>
 
       <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Download the form below and give it to the person providing this reference. They can return it directly to
-        <a href="mailto:admissions@northridgecommunityschool.com" style="color:var(--bronze);">admissions@northridgecommunityschool.com</a>
-        or by mail, or you're welcome to upload a completed copy here if you already have one.
+        Please download the form below and upload it here once complete. You can also send the form to
+        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a>
+        if you wish.
       </p>
 
       <a href="personal-reference.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Mature Christian Reference Form</a>
@@ -248,9 +249,9 @@
       <div class="apply-section-sub">An academic and character assessment from your student's current or most recent teacher.</div>
 
       <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Download the form below and give it to your student's teacher (or small group/Sunday School leader if homeschooled). They can return it directly to
-        <a href="mailto:admissions@northridgecommunityschool.com" style="color:var(--bronze);">admissions@northridgecommunityschool.com</a>
-        or by mail, or you're welcome to upload a completed copy here if you already have one.
+        Please download the form below and upload it here once complete. You can also send the form to
+        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a>
+        if you wish.
       </p>
 
       <a href="teacher-assessment.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Teacher Assessment Form</a>
@@ -386,6 +387,20 @@
 
 <div class="apply-toast" id="toast"></div>
 
-<script src="app.js?v=12"></script>
+<!-- THANK YOU ANIMATION OVERLAY -->
+<div id="applyThankYouOverlay" style="display:none;position:fixed;inset:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(2px);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <svg width="100" height="100" viewBox="0 0 100 100" style="animation:applyScaleIn 0.5s ease both;">
+    <circle cx="50" cy="50" r="48" fill="#22c55e"/>
+    <polyline points="28,52 44,68 72,34" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" style="animation:applyDrawCheck 0.5s ease 0.3s forwards;"/>
+  </svg>
+  <div style="font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:1.2rem;color:var(--ink);animation:applyFadeInUp 0.4s ease 0.5s both;">Thank You for Applying!</div>
+</div>
+<style>
+  @keyframes applyScaleIn{ from{ transform:scale(0); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  @keyframes applyDrawCheck{ 0%{ stroke-dashoffset:50; } 100%{ stroke-dashoffset:0; } }
+  @keyframes applyFadeInUp{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
+</style>
+
+<script src="app.js?v=13"></script>
 </body>
 </html>
