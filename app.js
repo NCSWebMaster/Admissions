@@ -30,6 +30,30 @@ function esc(value) {
     .replace(/'/g, '&#39;');
 }
 
+// Shortens a signature token (UUID) to a readable reference — last 8 chars.
+function shortToken(token) {
+  if (!token) return '';
+  return token.replace(/-/g, '').slice(-8).toUpperCase();
+}
+
+// Renders the light-green "signed" stamp shown on the confirmation screen
+// and in the printed application.
+function renderSignatureStamp(a) {
+  if (!a || !a.signature_name) return '';
+  const dateStr = a.signature_date
+    ? new Date(a.signature_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : '';
+  return `
+    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;align-items:flex-start;gap:12px;">
+      <span style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#22c55e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;">&#10003;</span>
+      <div>
+        <div style="font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:0.92rem;color:#166534;">Electronically Signed</div>
+        <div style="font-size:0.85rem;color:#3A2E2A;margin-top:2px;">${esc(a.signature_name)}${dateStr ? ' · ' + esc(dateStr) : ''}</div>
+        ${a.signature_token ? `<div style="font-size:0.78rem;color:#5a8a68;margin-top:2px;font-family:monospace;">Reference: ${esc(shortToken(a.signature_token))}</div>` : ''}
+      </div>
+    </div>`;
+}
+
 // Reformats any stored phone value to (000) 000-0000 for display.
 function formatPhoneDisplay(value) {
   if (!value) return '';
@@ -136,6 +160,7 @@ async function attemptValidateCode(code) {
   if (data.status === 'submitted') {
     lastApplicationData = data;
     document.getElementById('submittedStudentName').textContent = data.student_full_name || 'your student';
+    document.getElementById('signatureStampMount').innerHTML = renderSignatureStamp(data);
     showOnly('submittedScreen');
     return;
   }
@@ -481,13 +506,19 @@ document.getElementById('applicationForm').addEventListener('submit', async (e) 
     emergency_contact_relationship: payload.p_emergency_contact_relationship,
     emergency_contact_phone: payload.p_emergency_contact_phone,
     agreement_accepted: payload.p_agreement_accepted, signature_name: payload.p_signature_name,
-    signature_date: payload.p_signature_date
+    signature_date: payload.p_signature_date, signature_token: data.signature_token
   };
   // Parent info isn't collected on this form (it's coordinator-entered), so
   // carry it over from whatever validate_admission_code originally returned.
   if (window._prefillParentData) Object.assign(lastApplicationData, window._prefillParentData);
 
+  document.getElementById('signatureStampMount').innerHTML = renderSignatureStamp(lastApplicationData);
+
+  // Play the thank-you animation, then reveal the confirmation screen.
+  const thankYouOverlay = document.getElementById('applyThankYouOverlay');
+  thankYouOverlay.style.display = 'flex';
   showOnly('submittedScreen');
+  setTimeout(() => { thankYouOverlay.style.display = 'none'; }, 1900);
 });
 
 // ── PRINT / SAVE APPLICATION AS PDF ─────────────────────────
@@ -531,6 +562,7 @@ function buildApplicationPrintHTML(a) {
       row('Statement of Faith Agreement', a.agreement_accepted ? 'Agreed' : 'Not agreed') +
       row('Parent Signature', esc(a.signature_name)) + row('Date', esc(a.signature_date))
     )}
+    ${renderSignatureStamp(a)}
   `;
 }
 
