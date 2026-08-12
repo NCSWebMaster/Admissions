@@ -63,7 +63,7 @@
 .apply-state-screen{ text-align:center; padding:60px 6%; }
 .apply-state-screen h2{ color:var(--red); font-size:1.6rem; margin-bottom:12px; }
 .apply-state-screen p{ color:#5a4d47; max-width:440px; margin:0 auto; }
-.apply-status-badge{ display:inline-block; padding:6px 16px; border-radius:20px; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px; }
+.apply-status-badge{ display:inline-block; padding:12px 28px; border-radius:30px; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px; }
 .apply-status-badge.submitted{ background:#f0f4ff; color:#3b82f6; }
 .apply-status-badge.accepted{ background:#f0fdf4; color:#16a34a; }
 .apply-status-badge.waitlisted{ background:#fffbeb; color:#b45309; }
@@ -93,3 +93,12 @@
   .apply-row{ grid-template-columns:1fr; }
   .apply-card{ padding:24px 18px; }
 }
+
+/* Behavior Skills Questionnaire */
+.apply-behavior-section{ margin-bottom:24px; }
+.apply-behavior-section-title{ font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.95rem; color:var(--red); border-bottom:2px solid var(--grey-line); padding-bottom:6px; margin-bottom:14px; }
+.apply-rating-row-wrap{ margin-bottom:16px; }
+.apply-rating-question{ font-size:0.9rem; color:var(--ink); margin-bottom:8px; }
+.apply-rating-row{ display:flex; gap:6px; flex-wrap:wrap; }
+.apply-rating-btn{ min-width:40px; padding:9px 10px; border:2px solid var(--grey-line); border-radius:6px; background:#fff; font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:0.82rem; color:#6b5e58; cursor:pointer; transition:all 0.15s; }
+.apply-rating-btn.selected{ border-color:var(--red); color:var(--red); background:#fdf6f2; }
