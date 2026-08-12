@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apply | Northridge Community School</title>
 <link rel="stylesheet" href="styles.css?v=1">
-<link rel="stylesheet" href="apply.css?v=9">
+<link rel="stylesheet" href="apply.css?v=10">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -67,6 +67,9 @@
       <span class="apply-step-dot" data-step="5"></span>
       <span class="apply-step-dot" data-step="6"></span>
       <span class="apply-step-dot" data-step="7"></span>
+      <span class="apply-step-dot" data-step="8"></span>
+      <span class="apply-step-dot" data-step="9"></span>
+      <span class="apply-step-dot" data-step="10"></span>
     </div>
 
     <!-- STEP 1: STUDENT INFO -->
@@ -156,15 +159,8 @@
       </div>
     </div>
 
-    <!-- STEP 3: BEHAVIOR SKILLS QUESTIONNAIRE -->
+    <!-- STEP 3: PASTORAL REFERENCE -->
     <div class="apply-card apply-step" data-step="3" style="display:none;">
-      <div class="apply-section-title">Behavior Skills Questionnaire</div>
-      <div class="apply-section-sub">In an attempt to partner with you, please consider how regularly your child exhibits these behaviors. We're not looking for perfect children — just honest parental awareness. This helps our team, not your student's chances.</div>
-      <div id="behaviorQuestionsContainer"></div>
-    </div>
-
-    <!-- STEP 4: PASTORAL REFERENCE -->
-    <div class="apply-card apply-step" data-step="4" style="display:none;">
       <div class="apply-section-title">Pastoral Reference</div>
       <div class="apply-section-sub">Our admissions committee asks for a reference from a pastor or church leader who knows your family well.</div>
 
@@ -178,13 +174,96 @@
 
       <div class="apply-field">
         <label>Upload Completed Reference <span class="hint">(optional)</span></label>
-        <input type="file" id="pastoralRefFile" accept=".pdf,.jpg,.jpeg,.png">
+        <input type="file" class="apply-ref-upload" data-ref-type="pastoral" accept=".pdf,.jpg,.jpeg,.png">
       </div>
-      <div id="pastoralRefStatus" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
+      <div class="apply-ref-status" data-ref-type="pastoral" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
     </div>
 
-    <!-- STEP 5: STUDENT NEEDS & FAMILY CONTEXT -->
+    <!-- STEP 4: BEHAVIOR SKILLS QUESTIONNAIRE (upload) -->
+    <div class="apply-card apply-step" data-step="4" style="display:none;">
+      <div class="apply-section-title">Behavior Skills Questionnaire</div>
+      <div class="apply-section-sub">Please complete this questionnaire about your child's everyday behavior.</div>
+
+      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
+        Download the form below, complete it yourself, and either email it to
+        <a href="mailto:admissions@northridgecommunityschool.com" style="color:var(--bronze);">admissions@northridgecommunityschool.com</a>,
+        mail it in, or upload a completed copy here.
+      </p>
+
+      <a href="behavior-skills-questionnaire.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Behavior Skills Questionnaire</a>
+
+      <div class="apply-field">
+        <label>Upload Completed Questionnaire <span class="hint">(optional)</span></label>
+        <input type="file" class="apply-ref-upload" data-ref-type="behavior" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+      <div class="apply-ref-status" data-ref-type="behavior" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
+    </div>
+
+    <!-- STEP 5: MATURE CHRISTIAN REFERENCE (upload) -->
     <div class="apply-card apply-step" data-step="5" style="display:none;">
+      <div class="apply-section-title">Mature Christian Reference</div>
+      <div class="apply-section-sub">A reference from a mature Christian who knows your family well (other than your pastor).</div>
+
+      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
+        Download the form below and give it to the person providing this reference. They can return it directly to
+        <a href="mailto:admissions@northridgecommunityschool.com" style="color:var(--bronze);">admissions@northridgecommunityschool.com</a>
+        or by mail, or you're welcome to upload a completed copy here if you already have one.
+      </p>
+
+      <a href="personal-reference.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Mature Christian Reference Form</a>
+
+      <div class="apply-field">
+        <label>Upload Completed Reference <span class="hint">(optional)</span></label>
+        <input type="file" class="apply-ref-upload" data-ref-type="mature_christian" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+      <div class="apply-ref-status" data-ref-type="mature_christian" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
+    </div>
+
+    <!-- STEP 6: NCS FAMILY REFERENCE (optional contact info) -->
+    <div class="apply-card apply-step" data-step="6" style="display:none;">
+      <div class="apply-section-title">NCS Family Reference <span class="hint">(optional)</span></div>
+      <div class="apply-section-sub">If you know a family already enrolled at NCS who'd be willing to speak on your behalf, share their contact info here.</div>
+
+      <div class="apply-row single">
+        <div class="apply-field">
+          <label>Parent Name</label>
+          <input type="text" id="f-ncsref-name">
+        </div>
+      </div>
+      <div class="apply-row">
+        <div class="apply-field">
+          <label>Email</label>
+          <input type="email" id="f-ncsref-email">
+        </div>
+        <div class="apply-field">
+          <label>Phone</label>
+          <input type="tel" id="f-ncsref-phone">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 7: TEACHER ASSESSMENT (upload) -->
+    <div class="apply-card apply-step" data-step="7" style="display:none;">
+      <div class="apply-section-title">Teacher Assessment</div>
+      <div class="apply-section-sub">An academic and character assessment from your student's current or most recent teacher.</div>
+
+      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
+        Download the form below and give it to your student's teacher (or small group/Sunday School leader if homeschooled). They can return it directly to
+        <a href="mailto:admissions@northridgecommunityschool.com" style="color:var(--bronze);">admissions@northridgecommunityschool.com</a>
+        or by mail, or you're welcome to upload a completed copy here if you already have one.
+      </p>
+
+      <a href="teacher-assessment.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Teacher Assessment Form</a>
+
+      <div class="apply-field">
+        <label>Upload Completed Assessment <span class="hint">(optional)</span></label>
+        <input type="file" class="apply-ref-upload" data-ref-type="teacher_assessment" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+      <div class="apply-ref-status" data-ref-type="teacher_assessment" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
+    </div>
+
+    <!-- STEP 8: STUDENT NEEDS & FAMILY CONTEXT -->
+    <div class="apply-card apply-step" data-step="8" style="display:none;">
       <div class="apply-section-title">Student Needs</div>
       <div class="apply-section-sub">This helps us support your student well from day one.</div>
 
@@ -225,8 +304,8 @@
       </div>
     </div>
 
-    <!-- STEP 6: EMERGENCY CONTACT -->
-    <div class="apply-card apply-step" data-step="6" style="display:none;">
+    <!-- STEP 9: EMERGENCY CONTACT -->
+    <div class="apply-card apply-step" data-step="9" style="display:none;">
       <div class="apply-section-title">Emergency Contact</div>
       <div class="apply-section-sub">Someone we can reach if a parent/guardian is unavailable <span class="hint">(optional)</span>.</div>
       <div class="apply-row">
@@ -247,8 +326,8 @@
       </div>
     </div>
 
-    <!-- STEP 7: STATEMENT OF FAITH & AGREEMENT -->
-    <div class="apply-card apply-step" data-step="7" style="display:none;">
+    <!-- STEP 10: STATEMENT OF FAITH & AGREEMENT -->
+    <div class="apply-card apply-step" data-step="10" style="display:none;">
       <div class="apply-section-title">Agreement</div>
 
       <div class="apply-accordion" id="sofAccordion">
@@ -307,6 +386,6 @@
 
 <div class="apply-toast" id="toast"></div>
 
-<script src="app.js?v=10"></script>
+<script src="app.js?v=11"></script>
 </body>
 </html>
