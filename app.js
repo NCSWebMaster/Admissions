@@ -30,6 +30,14 @@ function esc(value) {
     .replace(/'/g, '&#39;');
 }
 
+// Reformats any stored phone value to (000) 000-0000 for display.
+function formatPhoneDisplay(value) {
+  if (!value) return '';
+  const digits = String(value).replace(/\D/g, '');
+  if (digits.length !== 10) return value;
+  return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+}
+
 function showToast(msg, duration = 3000) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -413,7 +421,10 @@ document.getElementById('saveLaterBtn').addEventListener('click', async () => {
     showToast('Could not save — please try again.');
     return;
   }
-  showToast('Progress saved. You can return anytime using your code.', 5000);
+  showToast('Progress saved. You can return anytime using your code.', 3000);
+  setTimeout(() => {
+    window.location.href = window.location.origin + window.location.pathname;
+  }, 1500);
 });
 
 // ── FINAL SUBMIT ─────────────────────────────────────────────
@@ -510,11 +521,11 @@ function buildApplicationPrintHTML(a) {
       row('Church Affiliation', esc(a.church_affiliation)) + row('How They Heard About NCS', esc(a.referral_source))
     )}
     ${section('Parent / Guardian',
-      row('Parent 1', esc([a.parent1_name, a.parent1_email, a.parent1_phone].filter(Boolean).join(' · '))) +
-      (a.parent2_name ? row('Parent 2', esc([a.parent2_name, a.parent2_email, a.parent2_phone].filter(Boolean).join(' · '))) : '')
+      row('Parent 1', esc([a.parent1_name, a.parent1_email, formatPhoneDisplay(a.parent1_phone)].filter(Boolean).join(' · '))) +
+      (a.parent2_name ? row('Parent 2', esc([a.parent2_name, a.parent2_email, formatPhoneDisplay(a.parent2_phone)].filter(Boolean).join(' · '))) : '')
     )}
     ${section('Emergency Contact',
-      row('Name', esc(a.emergency_contact_name)) + row('Relationship', esc(a.emergency_contact_relationship)) + row('Phone', esc(a.emergency_contact_phone))
+      row('Name', esc(a.emergency_contact_name)) + row('Relationship', esc(a.emergency_contact_relationship)) + row('Phone', esc(formatPhoneDisplay(a.emergency_contact_phone)))
     )}
     ${section('Agreement',
       row('Statement of Faith Agreement', a.agreement_accepted ? 'Agreed' : 'Not agreed') +
