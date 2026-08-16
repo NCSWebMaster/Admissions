@@ -585,7 +585,7 @@ function openApplicationPrintWindow(title, bodyHTML) {
 </head>
 <body>
   <div class="print-header">
-    <img src="https://ncswebmaster.github.io/NCS/logo.png" alt="NCS Logo">
+    <img src="https://ncswebmaster.github.io/NCS/img/logo.png" alt="NCS Logo">
     <h1>Northridge Community School</h1>
     <p>${title} · Generated ${new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}</p>
   </div>
