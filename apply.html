@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply | Northridge Community School</title>
+<link rel="stylesheet" href="styles.css?v=1">
+<link rel="stylesheet" href="apply.css?v=10">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav>
+  <a href="https://www.northridgecommunityschool.com" class="brand">
+    <img src="https://apply.northridgecommunityschool.com/img/logo.png" alt="NCS Crest">
+    <span class="brand-name-full">Northridge Community School</span>
+    <span class="brand-name-short">NCS</span>
+  </a>
+</nav>
+
+<div class="page-header">
+  <h1>Admission Application</h1>
+  <p id="pageHeaderSub">Enter the access code your admissions coordinator sent you to begin or continue your family's application.</p>
+</div>
+
+<div class="apply-wrap">
+
+  <!-- LOADING STATE -->
+  <div id="loadingScreen" class="apply-state-screen">
+    <p>Loading…</p>
+  </div>
+
+  <!-- CODE ENTRY SCREEN -->
+  <div id="codeScreen" class="apply-card code-entry" style="display:none;">
+    <p style="font-family:'Trebuchet MS',sans-serif;font-weight:700;color:var(--ink);margin-bottom:4px;">Enter Your Access Code</p>
+    <p style="font-size:0.88rem;color:#9a8b84;">This was emailed to you by our admissions office.</p>
+    <div class="code-error" id="codeError"></div>
+    <input type="text" id="codeInput" class="code-input" maxlength="8" placeholder="XXXXXXXX" autocomplete="off" autocapitalize="characters">
+    <button class="apply-btn-primary" id="codeSubmitBtn" style="max-width:280px;margin:8px auto 0;">Continue</button>
+    <p style="font-size:0.8rem;color:#9a8b84;margin-top:20px;">Don't have a code? Contact <a href="mailto:office@northridgecommunityschool.com" style="color:var(--bronze);">office@northridgecommunityschool.com</a> or attend an upcoming Information Night.</p>
+  </div>
+
+  <!-- SUBMITTED / CONFIRMATION SCREEN — shows each child's decision status independently -->
+  <div id="submittedScreen" class="apply-state-screen" style="display:none;">
+    <span class="apply-status-badge submitted">Submitted</span>
+    <h2>Thank You!</h2>
+    <p>Your family's application has been received. Our admissions team will review it and follow up by email with next steps.</p>
+    <p style="font-size:0.85rem;color:#9a8b84;margin-top:8px;">We've also emailed you a link to this page so you can return anytime.</p>
+    <div id="childDecisionsMount" style="text-align:left;margin-top:20px;"></div>
+    <div id="signatureStampMount" style="text-align:left;"></div>
+    <button type="button" class="apply-btn-secondary" id="printApplicationBtn" style="max-width:320px;margin:20px auto 0;">Print / Save Your Application</button>
+  </div>
+
+  <!-- APPLICATION FORM — steps generated dynamically in app.js based on child count -->
+  <form id="applicationForm" style="display:none;">
+    <div class="apply-steps" id="stepDots"></div>
+
+    <div id="stepMount"></div>
+
+    <div id="stepActionsCard" class="apply-card" style="text-align:center;">
+      <div id="formError" class="code-error"></div>
+      <div class="apply-step-actions">
+        <button type="button" class="apply-btn-secondary" id="prevStepBtn" style="display:none;">Back</button>
+        <button type="button" class="apply-btn-primary" id="nextStepBtn">Continue</button>
+        <button type="button" class="apply-btn-primary" id="submitAppBtn" style="display:none;">Submit Application</button>
+      </div>
+      <button type="button" class="apply-btn-secondary" id="saveLaterBtn">Save &amp; Finish Later</button>
+    </div>
+  </form>
+
+</div>
+
+<footer>
+  <img src="https://apply.northridgecommunityschool.com/img/logo.png" alt="NCS Crest" class="crest-small">
+  <div>Northridge Community School</div>
+  <div class="footer-contact">
+    <span>office@northridgecommunityschool.com</span>
+    <span class="footer-divider">|</span>
+    <span>Granada Hills / Northridge, CA</span>
+  </div>
+</footer>
+
+<div class="apply-toast" id="toast"></div>
+
+<!-- THANK YOU ANIMATION OVERLAY -->
+<div id="applyThankYouOverlay" style="display:none;position:fixed;inset:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(2px);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <svg width="100" height="100" viewBox="0 0 100 100" style="animation:applyScaleIn 0.5s ease both;">
+    <circle cx="50" cy="50" r="48" fill="#22c55e"/>
+    <polyline points="28,52 44,68 72,34" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" style="animation:applyDrawCheck 0.5s ease 0.3s forwards;"/>
+  </svg>
+  <div style="font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:1.2rem;color:var(--ink);animation:applyFadeInUp 0.4s ease 0.5s both;">Thank You for Applying!</div>
+</div>
+<style>
+  @keyframes applyScaleIn{ from{ transform:scale(0); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  @keyframes applyDrawCheck{ 0%{ stroke-dashoffset:50; } 100%{ stroke-dashoffset:0; } }
+  @keyframes applyFadeInUp{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
+  .apply-child-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
+  .apply-remove-child { background:none; border:none; color:var(--red); font-size:0.8rem; font-weight:600; text-decoration:underline; }
+  .apply-decision-row { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f7f2ec; border-radius:8px; margin-bottom:8px; }
+  .apply-decision-row .name { font-weight:700; color:var(--ink); }
+</style>
+
+<script src="app.js?v=15"></script>
+</body>
+</html>
