@@ -257,7 +257,10 @@ function renderCurrentStep() {
   const step = steps[currentStepIndex];
   const mount = document.getElementById('stepMount');
   mount.innerHTML = stepHTML(step);
-  wireStepEvents(step);
+  // Wiring on the next frame (not the same tick as the innerHTML swap) avoids an
+  // iOS Safari quirk where freshly-injected <select>/<input> elements can be
+  // briefly unresponsive to taps.
+  requestAnimationFrame(() => wireStepEvents(step));
 }
 
 function childLabel(child, index) {
@@ -506,6 +509,9 @@ function wireStepEvents(step) {
       document.getElementById('f-gender').value = c.gender;
       document.getElementById('f-grade').value = c.anticipated_grade;
       document.getElementById('f-dob').addEventListener('input', (e) => {
+        document.getElementById('f-age').value = calculateAgeFromDob(e.target.value);
+      });
+      document.getElementById('f-dob').addEventListener('change', (e) => {
         document.getElementById('f-age').value = calculateAgeFromDob(e.target.value);
       });
     }
