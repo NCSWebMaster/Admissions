@@ -20,7 +20,7 @@
 
 <div class="page-header">
   <h1>Admission Application</h1>
-  <p id="pageHeaderSub">Enter the access code your admissions coordinator sent you to begin or continue your application.</p>
+  <p id="pageHeaderSub">Enter the access code your admissions coordinator sent you to begin or continue your family's application.</p>
 </div>
 
 <div class="apply-wrap">
@@ -40,334 +40,29 @@
     <p style="font-size:0.8rem;color:#9a8b84;margin-top:20px;">Don't have a code? Contact <a href="mailto:office@northridgecommunityschool.com" style="color:var(--bronze);">office@northridgecommunityschool.com</a> or attend an upcoming Information Night.</p>
   </div>
 
-  <!-- ALREADY DECIDED SCREEN -->
-  <div id="decidedScreen" class="apply-state-screen" style="display:none;">
-    <span class="apply-status-badge" id="decidedBadge"></span>
-    <h2 id="decidedTitle"></h2>
-    <p id="decidedMessage"></p>
-    <button type="button" class="apply-btn-secondary" id="decidedBackBtn" style="max-width:280px;margin:28px auto 0;">Back to Start</button>
-  </div>
-
-  <!-- SUBMITTED / CONFIRMATION SCREEN -->
+  <!-- SUBMITTED / CONFIRMATION SCREEN — shows each child's decision status independently -->
   <div id="submittedScreen" class="apply-state-screen" style="display:none;">
     <span class="apply-status-badge submitted">Submitted</span>
     <h2>Thank You!</h2>
-    <p>Your application for <strong id="submittedStudentName"></strong> has been received. Our admissions team will review it and follow up by email with next steps.</p>
+    <p>Your family's application has been received. Our admissions team will review it and follow up by email with next steps.</p>
     <p style="font-size:0.85rem;color:#9a8b84;margin-top:8px;">We've also emailed you a link to this page so you can return anytime.</p>
+    <div id="childDecisionsMount" style="text-align:left;margin-top:20px;"></div>
     <div id="signatureStampMount" style="text-align:left;"></div>
     <button type="button" class="apply-btn-secondary" id="printApplicationBtn" style="max-width:320px;margin:20px auto 0;">Print / Save Your Application</button>
   </div>
 
-  <!-- APPLICATION FORM -->
+  <!-- APPLICATION FORM — steps generated dynamically in app.js based on child count -->
   <form id="applicationForm" style="display:none;">
-    <div class="apply-steps">
-      <span class="apply-step-dot active" data-step="1"></span>
-      <span class="apply-step-dot" data-step="2"></span>
-      <span class="apply-step-dot" data-step="3"></span>
-      <span class="apply-step-dot" data-step="4"></span>
-      <span class="apply-step-dot" data-step="5"></span>
-      <span class="apply-step-dot" data-step="6"></span>
-      <span class="apply-step-dot" data-step="7"></span>
-      <span class="apply-step-dot" data-step="8"></span>
-      <span class="apply-step-dot" data-step="9"></span>
-      <span class="apply-step-dot" data-step="10"></span>
-    </div>
+    <div class="apply-steps" id="stepDots"></div>
 
-    <!-- STEP 1: STUDENT INFO -->
-    <div class="apply-card apply-step" data-step="1">
-      <div class="apply-section-title">Student Information</div>
-      <div class="apply-section-sub">Confirm or update your student's details.</div>
-
-      <div class="apply-row single">
-        <div class="apply-field">
-          <label>Student's Full Name</label>
-          <input type="text" id="f-student-name">
-        </div>
-      </div>
-      <div class="apply-row">
-        <div class="apply-field">
-          <label>Nickname <span class="hint">(optional)</span></label>
-          <input type="text" id="f-nickname">
-        </div>
-        <div class="apply-field">
-          <label>Date of Birth</label>
-          <input type="date" id="f-dob">
-        </div>
-      </div>
-      <div class="apply-row">
-        <div class="apply-field">
-          <label>Age <span class="hint">(auto-filled from DOB)</span></label>
-          <input type="number" id="f-age" min="1" max="20" readonly style="background:#f3eee9;">
-        </div>
-        <div class="apply-field">
-          <label>Gender</label>
-          <select id="f-gender">
-            <option value="">— Select —</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-      </div>
-      <div class="apply-row single">
-        <div class="apply-field">
-          <label>Anticipated Grade Placement</label>
-          <select id="f-grade"></select>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 2: SCHOOL HISTORY -->
-    <div class="apply-card apply-step" data-step="2" style="display:none;">
-      <div class="apply-section-title">School History</div>
-      <div class="apply-section-sub">Tell us about your student's previous schooling.</div>
-
-      <div id="schoolsContainer"></div>
-      <button type="button" class="apply-add-btn" id="addSchoolBtn">+ Add a Previous School</button>
-
-      <div class="apply-row single" style="margin-top:20px;">
-        <div class="apply-field">
-          <label>Last Grade Completed</label>
-          <select id="f-last-grade"></select>
-        </div>
-      </div>
-
-      <div class="apply-field" style="margin-bottom:16px;">
-        <label>Has the student ever repeated a grade?</label>
-        <div class="apply-yesno" id="repeatedGradeToggle">
-          <button type="button" data-value="true">Yes</button>
-          <button type="button" data-value="false">No</button>
-        </div>
-      </div>
-      <div class="apply-row single" id="repeatedGradeExplainWrap" style="display:none;">
-        <div class="apply-field">
-          <label>Please explain</label>
-          <textarea id="f-repeated-explain"></textarea>
-        </div>
-      </div>
-
-      <div class="apply-field" style="margin-bottom:16px;">
-        <label>Has the student ever been dismissed, suspended, or expelled?</label>
-        <div class="apply-yesno" id="disciplinaryToggle">
-          <button type="button" data-value="true">Yes</button>
-          <button type="button" data-value="false">No</button>
-        </div>
-      </div>
-      <div class="apply-row single" id="disciplinaryExplainWrap" style="display:none;">
-        <div class="apply-field">
-          <label>Please explain</label>
-          <textarea id="f-disciplinary-explain"></textarea>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 3: PASTORAL REFERENCE -->
-    <div class="apply-card apply-step" data-step="3" style="display:none;">
-      <div class="apply-section-title">Pastoral Reference</div>
-      <div class="apply-section-sub">Our admissions committee asks for a reference from a pastor or church leader who knows your family well.</div>
-
-      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Please download the form below and upload it here once complete. You can also send the form to
-        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a>
-        if you wish.
-      </p>
-
-      <a href="forms/pastoral-reference.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Pastoral Reference Form</a>
-
-      <div class="apply-field">
-        <label>Upload Completed Reference <span class="hint">(optional)</span></label>
-        <input type="file" class="apply-ref-upload" data-ref-type="pastoral" accept=".pdf,.jpg,.jpeg,.png">
-      </div>
-      <div class="apply-ref-status" data-ref-type="pastoral" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
-    </div>
-
-    <!-- STEP 4: BEHAVIOR SKILLS QUESTIONNAIRE (upload) -->
-    <div class="apply-card apply-step" data-step="4" style="display:none;">
-      <div class="apply-section-title">Behavior Skills Questionnaire</div>
-      <div class="apply-section-sub">Please complete this questionnaire about your child's everyday behavior.</div>
-
-      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Please download the form below and upload it here once complete. You can also send the form to
-        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a>
-        if you wish.
-      </p>
-
-      <a href="forms/behavior-skills-questionnaire.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Behavior Skills Questionnaire</a>
-
-      <div class="apply-field">
-        <label>Upload Completed Questionnaire <span class="hint">(optional)</span></label>
-        <input type="file" class="apply-ref-upload" data-ref-type="behavior" accept=".pdf,.jpg,.jpeg,.png">
-      </div>
-      <div class="apply-ref-status" data-ref-type="behavior" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
-    </div>
-
-    <!-- STEP 5: MATURE CHRISTIAN REFERENCE (upload) -->
-    <div class="apply-card apply-step" data-step="5" style="display:none;">
-      <div class="apply-section-title">Mature Christian Reference</div>
-      <div class="apply-section-sub">A reference from a mature Christian who knows your family well (other than your pastor).</div>
-
-      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Please download the form below and upload it here once complete. You can also send the form to
-        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a>
-        if you wish.
-      </p>
-
-      <a href="forms/personal-reference.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Mature Christian Reference Form</a>
-
-      <div class="apply-field">
-        <label>Upload Completed Reference <span class="hint">(optional)</span></label>
-        <input type="file" class="apply-ref-upload" data-ref-type="mature_christian" accept=".pdf,.jpg,.jpeg,.png">
-      </div>
-      <div class="apply-ref-status" data-ref-type="mature_christian" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
-    </div>
-
-    <!-- STEP 6: NCS FAMILY REFERENCE (optional contact info) -->
-    <div class="apply-card apply-step" data-step="6" style="display:none;">
-      <div class="apply-section-title">NCS Family Reference <span class="hint">(optional)</span></div>
-      <div class="apply-section-sub">If you know a family already enrolled at NCS who'd be willing to speak on your behalf, share their contact info here.</div>
-
-      <div class="apply-row single">
-        <div class="apply-field">
-          <label>Parent Name</label>
-          <input type="text" id="f-ncsref-name">
-        </div>
-      </div>
-      <div class="apply-row">
-        <div class="apply-field">
-          <label>Email</label>
-          <input type="email" id="f-ncsref-email">
-        </div>
-        <div class="apply-field">
-          <label>Phone</label>
-          <input type="tel" id="f-ncsref-phone">
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 7: TEACHER ASSESSMENT (upload) -->
-    <div class="apply-card apply-step" data-step="7" style="display:none;">
-      <div class="apply-section-title">Teacher Assessment</div>
-      <div class="apply-section-sub">An academic and character assessment from your student's current or most recent teacher.</div>
-
-      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Please download the form below and upload it here once complete. You can also send the form to
-        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a>
-        if you wish.
-      </p>
-
-      <a href="forms/teacher-assessment.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Teacher Assessment Form</a>
-
-      <div class="apply-field">
-        <label>Upload Completed Assessment <span class="hint">(optional)</span></label>
-        <input type="file" class="apply-ref-upload" data-ref-type="teacher_assessment" accept=".pdf,.jpg,.jpeg,.png">
-      </div>
-      <div class="apply-ref-status" data-ref-type="teacher_assessment" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
-    </div>
-
-    <!-- STEP 8: STUDENT NEEDS & FAMILY CONTEXT -->
-    <div class="apply-card apply-step" data-step="8" style="display:none;">
-      <div class="apply-section-title">Student Needs</div>
-      <div class="apply-section-sub">This helps us support your student well from day one.</div>
-
-      <div class="apply-field" style="margin-bottom:16px;">
-        <label>Any diagnosed learning differences, IEP, or 504 plan?</label>
-        <div class="apply-yesno" id="learningNeedsToggle">
-          <button type="button" data-value="true">Yes</button>
-          <button type="button" data-value="false">No</button>
-        </div>
-      </div>
-      <div class="apply-row single" id="learningNeedsExplainWrap" style="display:none;">
-        <div class="apply-field">
-          <label>Please explain</label>
-          <textarea id="f-learning-explain"></textarea>
-        </div>
-      </div>
-
-      <div class="apply-row single">
-        <div class="apply-field">
-          <label>Medical conditions, allergies, or medications <span class="hint">(optional)</span></label>
-          <textarea id="f-medical"></textarea>
-        </div>
-      </div>
-
-      <div class="apply-section-title" style="margin-top:24px;">Family Context</div>
-      <div id="siblingsContainer"></div>
-      <button type="button" class="apply-add-btn" id="addSiblingBtn">+ Add a Sibling</button>
-
-      <div class="apply-row" style="margin-top:20px;">
-        <div class="apply-field">
-          <label>Church Home / Affiliation <span class="hint">(optional)</span></label>
-          <input type="text" id="f-church">
-        </div>
-        <div class="apply-field">
-          <label>How did you hear about NCS?</label>
-          <input type="text" id="f-referral">
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 9: EMERGENCY CONTACT -->
-    <div class="apply-card apply-step" data-step="9" style="display:none;">
-      <div class="apply-section-title">Emergency Contact</div>
-      <div class="apply-section-sub">Someone we can reach if a parent/guardian is unavailable <span class="hint">(optional)</span>.</div>
-      <div class="apply-row">
-        <div class="apply-field">
-          <label>Name</label>
-          <input type="text" id="f-ec-name">
-        </div>
-        <div class="apply-field">
-          <label>Relationship</label>
-          <input type="text" id="f-ec-relationship">
-        </div>
-      </div>
-      <div class="apply-row single">
-        <div class="apply-field">
-          <label>Phone</label>
-          <input type="tel" id="f-ec-phone">
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 10: STATEMENT OF FAITH & AGREEMENT -->
-    <div class="apply-card apply-step" data-step="10" style="display:none;">
-      <div class="apply-section-title">Agreement</div>
-
-      <div class="apply-accordion" id="sofAccordion">
-        <button type="button" class="apply-accordion-header" id="sofAccordionToggle">
-          <span>Statement of Faith <span class="hint">(tap to expand — required)</span></span>
-          <span class="apply-accordion-arrow" id="sofAccordionArrow">▾</span>
-        </button>
-        <div class="apply-accordion-body" id="sofAccordionBody">
-          <p>We believe the Bible to be the authoritative Word of God, inerrant and infallible. We believe in one true God manifested eternally in three Persons — Father, Son, and Holy Spirit — and in the deity, virgin birth, atoning death, and bodily resurrection of Jesus Christ. We believe salvation is a free gift of grace received by faith, and that marriage is a covenant between one man and one woman as delineated in Scripture.</p>
-        </div>
-      </div>
-
-      <div class="apply-agree">
-        <input type="checkbox" id="f-agreement" disabled>
-        <label for="f-agreement">I have read and agree to the Statement of Faith above.</label>
-      </div>
-
-      <p style="font-size:0.85rem;margin:-6px 0 4px;">
-        <a href="biblical-foundations.pdf" target="_blank" rel="noopener" style="color:var(--bronze);font-family:'Trebuchet MS',sans-serif;font-weight:700;text-decoration:none;">View our full Biblical Foundations Statement →</a>
-      </p>
-
-      <div class="apply-row">
-        <div class="apply-field">
-          <label>Parent Signature <span class="hint">(type full name)</span></label>
-          <input type="text" id="f-signature-name">
-        </div>
-        <div class="apply-field">
-          <label>Date</label>
-          <input type="date" id="f-signature-date">
-        </div>
-      </div>
-    </div>
+    <div id="stepMount"></div>
 
     <div id="stepActionsCard" class="apply-card" style="text-align:center;">
       <div id="formError" class="code-error"></div>
       <div class="apply-step-actions">
         <button type="button" class="apply-btn-secondary" id="prevStepBtn" style="display:none;">Back</button>
         <button type="button" class="apply-btn-primary" id="nextStepBtn">Continue</button>
-        <button type="submit" class="apply-btn-primary" id="submitAppBtn" style="display:none;">Submit Application</button>
+        <button type="button" class="apply-btn-primary" id="submitAppBtn" style="display:none;">Submit Application</button>
       </div>
       <button type="button" class="apply-btn-secondary" id="saveLaterBtn">Save &amp; Finish Later</button>
     </div>
@@ -399,8 +94,12 @@
   @keyframes applyScaleIn{ from{ transform:scale(0); opacity:0; } to{ transform:scale(1); opacity:1; } }
   @keyframes applyDrawCheck{ 0%{ stroke-dashoffset:50; } 100%{ stroke-dashoffset:0; } }
   @keyframes applyFadeInUp{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
+  .apply-child-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
+  .apply-remove-child { background:none; border:none; color:var(--red); font-size:0.8rem; font-weight:600; text-decoration:underline; }
+  .apply-decision-row { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f7f2ec; border-radius:8px; margin-bottom:8px; }
+  .apply-decision-row .name { font-weight:700; color:var(--ink); }
 </style>
 
-<script src="app.js?v=13"></script>
+<script src="app.js?v=17"></script>
 </body>
 </html>
