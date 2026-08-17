@@ -131,6 +131,10 @@ async function attemptValidateCode(code) {
 
   const { data, error } = await sb.rpc('validate_admission_family_code', { p_code: code });
 
+  // ── TEMP DEBUG — remove after diagnosis ──────────────────────
+  alert('DEBUG error: ' + JSON.stringify(error) + '\n\nDEBUG data: ' + JSON.stringify(data).slice(0, 900));
+  // ──────────────────────────────────────────────────────────────
+
   if (error || !data || !data.valid) {
     showOnly('codeScreen');
     document.getElementById('codeError').textContent =
@@ -260,7 +264,15 @@ function renderCurrentStep() {
   // Wiring on the next frame (not the same tick as the innerHTML swap) avoids an
   // iOS Safari quirk where freshly-injected <select>/<input> elements can be
   // briefly unresponsive to taps.
-  requestAnimationFrame(() => wireStepEvents(step));
+  requestAnimationFrame(() => {
+    try {
+      wireStepEvents(step);
+    } catch (err) {
+      // ── TEMP DEBUG — remove after diagnosis ──────────────────
+      alert('DEBUG wireStepEvents threw: ' + err.message);
+      // ──────────────────────────────────────────────────────────
+    }
+  });
 }
 
 function childLabel(child, index) {
