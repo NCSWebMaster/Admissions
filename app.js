@@ -4,6 +4,19 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const GRADE_OPTIONS = ['TK','Kindergarten','1st Grade','2nd Grade','3rd Grade','4th Grade','5th Grade','6th Grade','7th Grade','8th Grade'];
 
+// New Interested Family (OnePlace admin) stores grades as short codes (TK, K, 1-8).
+// This form's dropdown uses full labels. Map codes -> labels so admin-entered
+// grades pre-select correctly here; if a value's already a full label (or blank),
+// pass it through unchanged.
+const ADMIN_GRADE_CODE_TO_LABEL = {
+  'TK': 'TK', 'K': 'Kindergarten', '1': '1st Grade', '2': '2nd Grade', '3': '3rd Grade',
+  '4': '4th Grade', '5': '5th Grade', '6': '6th Grade', '7': '7th Grade', '8': '8th Grade'
+};
+function normalizeGradeLabel(value) {
+  if (!value) return value;
+  return ADMIN_GRADE_CODE_TO_LABEL[value] || value;
+}
+
 function esc(value) {
   if (value === null || value === undefined) return '';
   return String(value)
@@ -17,6 +30,38 @@ function esc(value) {
 function gradeOptionsHTML(selected) {
   return '<option value="">— Select Grade —</option>' +
     GRADE_OPTIONS.map(g => `<option value="${g}"${g === selected ? ' selected' : ''}>${g}</option>`).join('');
+}
+
+// Shared markup for the four "download a form, upload it back" reference
+// steps (pastoral, mature Christian, behavior questionnaire, teacher assessment).
+function referenceUploadCardHTML({ titleBlockHTML, sectionSub, pdfHref, pdfLabel, uploadLabel, refType }) {
+  return `<div class="apply-card">
+    ${titleBlockHTML}
+    <div class="apply-section-sub">${sectionSub}</div>
+    <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
+      Please download the form below and upload it here once complete. You can also send the form to
+      <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a> if you wish.
+    </p>
+    <a href="${pdfHref}" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">${pdfLabel}</a>
+    <div class="apply-field">
+      <label>${uploadLabel} <span class="hint">(optional)</span></label>
+      <input type="file" id="f-ref-upload" data-ref-type="${refType}" accept=".pdf,.jpg,.jpeg,.png">
+    </div>
+    <div class="apply-ref-status" id="f-ref-status" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
+  </div>`;
+}
+
+// Shared markup for the three Yes/No-plus-explanation questions
+// (repeated grade, disciplinary history, learning needs).
+function yesNoWithExplainHTML(label, toggleId, explainWrapId, explainInputId) {
+  return `
+    <div class="apply-field" style="margin-bottom:16px;">
+      <label>${label}</label>
+      <div class="apply-yesno" id="${toggleId}"><button type="button" data-value="true">Yes</button><button type="button" data-value="false">No</button></div>
+    </div>
+    <div class="apply-row single" id="${explainWrapId}" style="display:none;">
+      <div class="apply-field"><label>Please explain</label><textarea id="${explainInputId}"></textarea></div>
+    </div>`;
 }
 
 const US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
@@ -131,10 +176,6 @@ async function attemptValidateCode(code) {
 
   const { data, error } = await sb.rpc('validate_admission_family_code', { p_code: code });
 
-  // ── TEMP DEBUG — remove after diagnosis ──────────────────────
-  alert('DEBUG error: ' + JSON.stringify(error) + '\n\nDEBUG data: ' + JSON.stringify(data).slice(0, 900));
-  // ──────────────────────────────────────────────────────────────
-
   if (error || !data || !data.valid) {
     showOnly('codeScreen');
     document.getElementById('codeError').textContent =
@@ -192,7 +233,7 @@ function prefillFromFamilyData(data) {
     nickname: c.nickname || '',
     dob: c.dob || '',
     gender: c.gender || '',
-    anticipated_grade: c.anticipated_grade || '',
+    anticipated_grade: normalizeGradeLabel(c.anticipated_grade) || '',
     previous_schools: Array.isArray(c.previous_schools) ? c.previous_schools.slice() : [],
     last_grade_completed: c.last_grade_completed || '',
     repeated_grade: c.repeated_grade,
@@ -215,6 +256,7 @@ function buildSteps() {
     steps.push({ type: 'child-behavior', childIndex: i });
     steps.push({ type: 'child-teacher', childIndex: i });
   });
+  steps.push({ type: 'add-another-child' });
   steps.push({ type: 'pastoral' });
   steps.push({ type: 'personal' });
   steps.push({ type: 'ncs-ref' });
@@ -264,15 +306,7 @@ function renderCurrentStep() {
   // Wiring on the next frame (not the same tick as the innerHTML swap) avoids an
   // iOS Safari quirk where freshly-injected <select>/<input> elements can be
   // briefly unresponsive to taps.
-  requestAnimationFrame(() => {
-    try {
-      wireStepEvents(step);
-    } catch (err) {
-      // ── TEMP DEBUG — remove after diagnosis ──────────────────
-      alert('DEBUG wireStepEvents threw: ' + err.message);
-      // ──────────────────────────────────────────────────────────
-    }
-  });
+  requestAnimationFrame(() => wireStepEvents(step));
 }
 
 function childLabel(child, index) {
@@ -280,8 +314,18 @@ function childLabel(child, index) {
 }
 
 function stepHTML(step) {
+  if (step.type === 'add-another-child') return addAnotherChildStepHTML();
   if (step.type.startsWith('child-')) return childStepHTML(step);
   return familyStepHTML(step);
+}
+
+function addAnotherChildStepHTML() {
+  return `<div class="apply-card" style="text-align:center;">
+    <div class="apply-section-title">Add Another Student?</div>
+    <div class="apply-section-sub">If another child in your family is also applying, add them now — one signature and one set of references covers your whole family.</div>
+    <button type="button" class="apply-add-btn" id="addAnotherChildBtn" style="margin:8px auto 0;">+ Add Another Student</button>
+    <p style="font-size:0.85rem;color:#9a8b84;margin-top:18px;">Otherwise, tap <strong>Continue</strong> below to move on to your family references.</p>
+  </div>`;
 }
 
 function childStepHTML(step) {
@@ -325,20 +369,8 @@ function childStepHTML(step) {
       <div class="apply-row single" style="margin-top:20px;">
         <div class="apply-field"><label>Last Grade Completed</label><select id="f-last-grade">${gradeOptionsHTML(c.last_grade_completed)}</select></div>
       </div>
-      <div class="apply-field" style="margin-bottom:16px;">
-        <label>Has this child ever repeated a grade?</label>
-        <div class="apply-yesno" id="repeatedGradeToggle"><button type="button" data-value="true">Yes</button><button type="button" data-value="false">No</button></div>
-      </div>
-      <div class="apply-row single" id="repeatedGradeExplainWrap" style="display:none;">
-        <div class="apply-field"><label>Please explain</label><textarea id="f-repeated-explain"></textarea></div>
-      </div>
-      <div class="apply-field" style="margin-bottom:16px;">
-        <label>Has this child ever been dismissed, suspended, or expelled?</label>
-        <div class="apply-yesno" id="disciplinaryToggle"><button type="button" data-value="true">Yes</button><button type="button" data-value="false">No</button></div>
-      </div>
-      <div class="apply-row single" id="disciplinaryExplainWrap" style="display:none;">
-        <div class="apply-field"><label>Please explain</label><textarea id="f-disciplinary-explain"></textarea></div>
-      </div>
+      ${yesNoWithExplainHTML('Has this child ever repeated a grade?', 'repeatedGradeToggle', 'repeatedGradeExplainWrap', 'f-repeated-explain')}
+      ${yesNoWithExplainHTML('Has this child ever been dismissed, suspended, or expelled?', 'disciplinaryToggle', 'disciplinaryExplainWrap', 'f-disciplinary-explain')}
     </div>`;
   }
 
@@ -346,13 +378,7 @@ function childStepHTML(step) {
     return `<div class="apply-card">
       ${header}
       <div class="apply-section-sub">This helps us support this child well from day one.</div>
-      <div class="apply-field" style="margin-bottom:16px;">
-        <label>Any diagnosed learning differences, IEP, or 504 plan?</label>
-        <div class="apply-yesno" id="learningNeedsToggle"><button type="button" data-value="true">Yes</button><button type="button" data-value="false">No</button></div>
-      </div>
-      <div class="apply-row single" id="learningNeedsExplainWrap" style="display:none;">
-        <div class="apply-field"><label>Please explain</label><textarea id="f-learning-explain"></textarea></div>
-      </div>
+      ${yesNoWithExplainHTML('Any diagnosed learning differences, IEP, or 504 plan?', 'learningNeedsToggle', 'learningNeedsExplainWrap', 'f-learning-explain')}
       <div class="apply-row single">
         <div class="apply-field"><label>Medical conditions, allergies, or medications <span class="hint">(optional)</span></label><textarea id="f-medical"></textarea></div>
       </div>
@@ -360,75 +386,49 @@ function childStepHTML(step) {
   }
 
   if (step.type === 'child-behavior') {
-    return `<div class="apply-card">
-      ${header}
-      <div class="apply-section-sub">Please complete this questionnaire about this child's everyday behavior.</div>
-      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Please download the form below and upload it here once complete. You can also send the form to
-        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a> if you wish.
-      </p>
-      <a href="forms/behavior-skills-questionnaire.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Behavior Skills Questionnaire</a>
-      <div class="apply-field">
-        <label>Upload Completed Questionnaire <span class="hint">(optional)</span></label>
-        <input type="file" id="f-ref-upload" data-ref-type="behavior" accept=".pdf,.jpg,.jpeg,.png">
-      </div>
-      <div class="apply-ref-status" id="f-ref-status" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
-    </div>`;
+    return referenceUploadCardHTML({
+      titleBlockHTML: header,
+      sectionSub: "Please complete this questionnaire about this child's everyday behavior.",
+      pdfHref: 'forms/behavior-skills-questionnaire.pdf',
+      pdfLabel: 'Download Behavior Skills Questionnaire',
+      uploadLabel: 'Upload Completed Questionnaire',
+      refType: 'behavior'
+    });
   }
 
   if (step.type === 'child-teacher') {
-    const isLastChild = step.childIndex === children.length - 1;
-    return `<div class="apply-card">
-      ${header}
-      <div class="apply-section-sub">An academic and character assessment from this child's current or most recent teacher.</div>
-      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Please download the form below and upload it here once complete. You can also send the form to
-        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a> if you wish.
-      </p>
-      <a href="forms/teacher-assessment.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Teacher Assessment Form</a>
-      <div class="apply-field">
-        <label>Upload Completed Assessment <span class="hint">(optional)</span></label>
-        <input type="file" id="f-ref-upload" data-ref-type="teacher_assessment" accept=".pdf,.jpg,.jpeg,.png">
-      </div>
-      <div class="apply-ref-status" id="f-ref-status" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
-      ${isLastChild ? `<button type="button" class="apply-add-btn" id="addChildBtn" style="margin-top:20px;">+ Add Another Child</button>` : ''}
-    </div>`;
+    return referenceUploadCardHTML({
+      titleBlockHTML: header,
+      sectionSub: "An academic and character assessment from this child's current or most recent teacher.",
+      pdfHref: 'forms/teacher-assessment.pdf',
+      pdfLabel: 'Download Teacher Assessment Form',
+      uploadLabel: 'Upload Completed Assessment',
+      refType: 'teacher_assessment'
+    });
   }
 }
 
 function familyStepHTML(step) {
   if (step.type === 'pastoral') {
-    return `<div class="apply-card">
-      <div class="apply-section-title">Pastoral Reference</div>
-      <div class="apply-section-sub">One reference from a pastor or church leader covers your whole family.</div>
-      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Please download the form below and upload it here once complete. You can also send the form to
-        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a> if you wish.
-      </p>
-      <a href="forms/pastoral-reference.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Pastoral Reference Form</a>
-      <div class="apply-field">
-        <label>Upload Completed Reference <span class="hint">(optional)</span></label>
-        <input type="file" id="f-ref-upload" data-ref-type="pastoral" accept=".pdf,.jpg,.jpeg,.png">
-      </div>
-      <div class="apply-ref-status" id="f-ref-status" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
-    </div>`;
+    return referenceUploadCardHTML({
+      titleBlockHTML: '<div class="apply-section-title">Pastoral Reference</div>',
+      sectionSub: 'One reference from a pastor or church leader covers your whole family.',
+      pdfHref: 'forms/pastoral-reference.pdf',
+      pdfLabel: 'Download Pastoral Reference Form',
+      uploadLabel: 'Upload Completed Reference',
+      refType: 'pastoral'
+    });
   }
 
   if (step.type === 'personal') {
-    return `<div class="apply-card">
-      <div class="apply-section-title">Mature Christian Reference</div>
-      <div class="apply-section-sub">A reference from a mature Christian who knows your family well (other than your pastor). One covers your whole family.</div>
-      <p style="font-size:0.9rem;color:#5a4d47;line-height:1.7;margin-bottom:16px;">
-        Please download the form below and upload it here once complete. You can also send the form to
-        <a href="mailto:admissionsgroup@northridgecommunityschool.com" style="color:var(--bronze);">admissionsgroup@northridgecommunityschool.com</a> if you wish.
-      </p>
-      <a href="forms/personal-reference.pdf" target="_blank" rel="noopener" class="apply-btn-secondary" style="display:inline-block;text-align:center;text-decoration:none;width:100%;box-sizing:border-box;margin-bottom:20px;">Download Mature Christian Reference Form</a>
-      <div class="apply-field">
-        <label>Upload Completed Reference <span class="hint">(optional)</span></label>
-        <input type="file" id="f-ref-upload" data-ref-type="mature_christian" accept=".pdf,.jpg,.jpeg,.png">
-      </div>
-      <div class="apply-ref-status" id="f-ref-status" style="font-size:0.85rem;color:#9a8b84;margin-top:8px;"></div>
-    </div>`;
+    return referenceUploadCardHTML({
+      titleBlockHTML: '<div class="apply-section-title">Mature Christian Reference</div>',
+      sectionSub: "A reference from a mature Christian who knows your family well (other than your pastor). One covers your whole family.",
+      pdfHref: 'forms/personal-reference.pdf',
+      pdfLabel: 'Download Mature Christian Reference Form',
+      uploadLabel: 'Upload Completed Reference',
+      refType: 'mature_christian'
+    });
   }
 
   if (step.type === 'ncs-ref') {
@@ -494,6 +494,12 @@ function familyStepHTML(step) {
 
 // ── WIRE UP EVENTS + PREFILL FOR THE CURRENTLY RENDERED STEP ─
 function wireStepEvents(step) {
+  if (step.type === 'add-another-child') {
+    const btn = document.getElementById('addAnotherChildBtn');
+    if (btn) btn.addEventListener('click', addAnotherChild);
+    return;
+  }
+
   if (step.type.startsWith('child-')) {
     const c = children[step.childIndex];
 
@@ -553,10 +559,6 @@ function wireStepEvents(step) {
 
     if (step.type === 'child-behavior' || step.type === 'child-teacher') {
       wireRefUpload(c.id);
-      if (step.type === 'child-teacher') {
-        const addBtn = document.getElementById('addChildBtn');
-        if (addBtn) addBtn.addEventListener('click', addAnotherChild);
-      }
     }
     return;
   }
